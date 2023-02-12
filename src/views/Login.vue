@@ -23,16 +23,27 @@ const submit = () => {
     <div class="w-full max-w-[26rem] p-4 sm:px-5">
       <div class="text-center">
         <img
-            class="mx-auto h-16 w-16"
+            class="mx-auto h-16 w-16 block dark:hidden"
             src="/src/assets/images/app-logo.svg"
             alt="logo"
         />
+        <img
+            class="mx-auto h-16 w-16 hidden dark:block"
+            src="/src/assets/images/app-logo-white.svg"
+            alt="logo"
+        />
         <div class="mt-4">
-          <h2
-              class="text-2xl font-semibold text-slate-600 dark:text-navy-100"
-          >
-            Welcome Back
-          </h2>
+          <img
+              class="mx-auto w-[70%] block dark:hidden"
+              src="/src/assets/images/app-logo-text.svg"
+              alt="logo"
+          />
+          <img
+              class="mx-auto w-[70%] hidden dark:block"
+              src="/src/assets/images/app-logo-text-white.svg"
+              alt="logo"
+          />
+
           <p class="text-slate-400 dark:text-navy-300">
             Please sign in to continue
           </p>

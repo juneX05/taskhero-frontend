@@ -7,10 +7,10 @@
       <div class="flex items-center justify-between px-3 pt-4">
         <!-- Application Logo -->
         <div class="flex">
-          <a href="/">
+          <a href="/" class="flex flex-col justify-center items-center">
             <img
-                class="h-11 w-11 transition-transform duration-500 ease-in-out hover:rotate-[360deg]"
-                src="/src/assets/images/app-logo.svg"
+                class=" w-[80%] transition-transform duration-500 ease-in-out"
+                src="/src/assets/images/app-logo-text-white.svg"
                 alt="logo"
             />
           </a>
