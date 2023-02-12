@@ -2,21 +2,26 @@
   <!-- Sidebar -->
   <div class="sidebar sidebar-panel print:hidden">
     <div
-        class="flex h-full grow flex-col border-r border-navy-700 bg-navy-750"
+        class="flex h-full grow flex-col border-r border-slate-150 bg-white dark:border-navy-700 dark:bg-navy-750"
     >
       <div class="flex items-center justify-between px-3 pt-4">
         <!-- Application Logo -->
         <div class="flex">
           <a href="/" class="flex flex-col justify-center items-center">
             <img
-                class=" w-[80%] transition-transform duration-500 ease-in-out"
+                class="mx-auto w-[70%] block dark:hidden"
+                src="/src/assets/images/app-logo-text.svg"
+                alt="logo"
+            />
+            <img
+                class="mx-auto w-[70%] hidden dark:block"
                 src="/src/assets/images/app-logo-text-white.svg"
                 alt="logo"
             />
           </a>
         </div>
         <button @click="uiCloseSidebar"
-            class="sidebar-close btn h-7 w-7 rounded-full p-0 text-accent-light/80 hover:bg-navy-300/20 focus:bg-navy-300/20 active:bg-navy-300/25 xl:hidden"
+                class="sidebar-close btn h-7 w-7 rounded-full p-0 text-primary hover:bg-slate-300/20 focus:bg-slate-300/20 active:bg-slate-300/25 dark:text-accent-light/80 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25 xl:hidden"
         >
           <svg
               xmlns="http://www.w3.org/2000/svg"

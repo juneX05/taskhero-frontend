@@ -23,11 +23,11 @@ const menus = useGlobalStore().menus
     </li>
 
     <!-- Normal Link -->
-    <li v-else-if="menu.children == undefined" :key="'normal-' + index">
+    <li class="dark:text-navy-" v-else-if="menu.children == undefined" :key="'normal-' + index">
       <router-link
           :to="menu.link"
-          data-default-class="text-navy-200 hover:text-navy-50"
-          data-active-class="font-medium text-accent-light bg-slate-900"
+          data-default-class="text-slate-600 dark:text-navy-200 hover:text-primary hover:bg-slate-300 dark:hover:text-white dark:hover:bg-transparent"
+          data-active-class="font-medium text-primary bg-slate-300 dark:text-white dark:bg-primary"
           class="nav-link flex py-2 px-4 text-xs+ tracking-wide outline-none transition-colors duration-300 ease-in-out"
       >
         <div class="flex items-center justify-between">
@@ -42,10 +42,10 @@ const menus = useGlobalStore().menus
     <!-- Link with dropdown -->
     <li
         v-else :key="'dropdown-' +  index"
-        class="ac nav-parent [&.is-active_.ac-trigger_.down-icon]:rotate-90 [&.is-active_.ac-trigger]:font-semibold [&.is-active_.ac-trigger]:text-navy-50 [&.is-active_.ac-trigger]:bg-slate-900"
+        class="ac nav-parent [&.is-active_.ac-trigger_.down-icon]:rotate-90 [&.is-active_.ac-trigger]:font-semibold [&.is-active_.ac-trigger]:text-primary dark:[&.is-active_.ac-trigger]:text-white dark:[&.is-active_.ac-trigger]:bg-primary [&.is-active_.ac-trigger]:bg-slate-300"
     >
       <button
-          class="ac-trigger flex flex-row w-full items-center justify-between py-2 px-4 text-xs+ tracking-wide outline-none transition-[color,padding-left] duration-300 ease-in-out text-navy-200 hover:text-navy-50"
+          class="ac-trigger flex flex-row w-full items-center justify-between py-2 px-4 text-xs+ tracking-wide outline-none transition-[color,padding-left] duration-300 ease-in-out dark:text-navy-200 text-navy-900 dark:hover:text-white hover:text-primary hover:bg-slate-300 dark:hover:bg-transparent"
       >
 
         <div class="flex items-center justify-between">
@@ -68,12 +68,12 @@ const menus = useGlobalStore().menus
           ></path>
         </svg>
       </button>
-      <ul class="ac-panel bg-black">
+      <ul class="ac-panel bg-navy-900">
         <li v-for="(child, child_index) in menu.children" :key="child_index">
           <router-link
               :to="child.link"
               class="nav-link flex items-center justify-between p-2 text-xs+ tracking-wide outline-none transition-[color,padding-left] duration-300 ease-in-out hover:pl-4"
-              data-default-class="text-navy-200 hover:text-navy-50"
+              data-default-class="dark:text-navy-200 text-navy-200 dark:hover:text-navy-50 hover:text-primary"
               data-active-class="font-medium text-accent-light"
           >
             <div class="flex items-center space-x-2">
