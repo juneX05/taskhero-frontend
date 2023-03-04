@@ -38,7 +38,7 @@ const render = {
                 </div>`;
   },
   item: function (data, escape) {
-    return `<span class="badge rounded-full bg-primary dark:bg-accent text-white p-px mr-2">
+    return `<span class="badge rounded-full bg-primary dark:bg-accent text-white p-px mr-2 mb-1">
                 <span class="avatar w-6 h-6">
                   <img class="rounded-full" src="${escape(data.src)}" alt="avatar">
                 </span>

@@ -17,7 +17,7 @@ const globalStore = useGlobalStore()
   <!-- Page Wrapper -->
   <div
       id="root"
-      class="min-h-100vh flex grow bg-slate-50 dark:bg-navy-900"
+      class="min-h-100vh flex grow bg-slate-300 dark:bg-navy-900"
       :class="{ 'cloak' : globalStore.preloader }"
   >
     <router-view></router-view>

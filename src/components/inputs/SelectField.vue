@@ -54,7 +54,7 @@ const manageSelector = (rerender = false) => {
   if (rerender)
     if (element._tom) element._tom.destroy();
 
-  element._tom = new Tom(element,  {
+  const config = {
     valueField: props.valueField,
     labelField: props.labelField,
     searchField: props.searchField,
@@ -64,7 +64,14 @@ const manageSelector = (rerender = false) => {
     // sortField: {field: "text", direction: "asc"},
     placeholder: props.placeholder,
     render: props.render,
-  });
+    plugins: {
+    },
+  }
+
+  if (props.multiple) {
+    config.plugins.remove_button = 'remove this item';
+  }
+  element._tom = new Tom(element,  config);
 
 }
 

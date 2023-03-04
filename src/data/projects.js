@@ -4,6 +4,14 @@ const projects = [
         id:1,
         color: '#ff9800',
         image: '/src/assets/images/800x600.png',
+        description: 'A very long task description, long enough to break the screen if possible. But so long\n' +
+            '                                to be great and wonderful explained description.\n' +
+            '                                A very long task description, long enough to break the screen if possible. But so long\n' +
+            '                                to be great and wonderful explained description. <br/>\n' +
+            '                                A very long task description, long enough to break the screen if possible. But so long\n' +
+            '                                to be great and wonderful explained description.\n' +
+            '                                A very long task description, long enough to break the screen if possible. But so long\n' +
+            '                                to be great and wonderful explained description. <br/>',
         created_date: 'May 01, 2021',
         name: 'Mobile App',
         category: 'Prototyping',
@@ -21,6 +29,14 @@ const projects = [
         id:2,
         color: "'rgb(14 165 233 / .15)'",
         image: '/src/assets/images/800x600.png',
+        description: 'A very long task description, long enough to break the screen if possible. But so long\n' +
+            '                                to be great and wonderful explained description.\n' +
+            '                                A very long task description, long enough to break the screen if possible. But so long\n' +
+            '                                to be great and wonderful explained description. <br/>\n' +
+            '                                A very long task description, long enough to break the screen if possible. But so long\n' +
+            '                                to be great and wonderful explained description.\n' +
+            '                                A very long task description, long enough to break the screen if possible. But so long\n' +
+            '                                to be great and wonderful explained description. <br/>',
         created_date: 'June 04, 2021',
         name: 'Design Learn Management System',
         category: 'UI/UX Design',
@@ -39,6 +55,14 @@ const projects = [
         id:3,
         color: 'bg-secondary/15',
         image: '/src/assets/images/illustrations/chat-ui.svg',
+        description: 'A very long task description, long enough to break the screen if possible. But so long\n' +
+            '                                to be great and wonderful explained description.\n' +
+            '                                A very long task description, long enough to break the screen if possible. But so long\n' +
+            '                                to be great and wonderful explained description. <br/>\n' +
+            '                                A very long task description, long enough to break the screen if possible. But so long\n' +
+            '                                to be great and wonderful explained description.\n' +
+            '                                A very long task description, long enough to break the screen if possible. But so long\n' +
+            '                                to be great and wonderful explained description. <br/>',
         created_date: 'Oct 27, 2021',
         name: 'Chat Mobile App',
         category: 'Prototyping',
@@ -56,6 +80,14 @@ const projects = [
         id:4,
         color: 'bginfo',
         image: 'image',
+        description: 'A very long task description, long enough to break the screen if possible. But so long\n' +
+            '                                to be great and wonderful explained description.\n' +
+            '                                A very long task description, long enough to break the screen if possible. But so long\n' +
+            '                                to be great and wonderful explained description. <br/>\n' +
+            '                                A very long task description, long enough to break the screen if possible. But so long\n' +
+            '                                to be great and wonderful explained description.\n' +
+            '                                A very long task description, long enough to break the screen if possible. But so long\n' +
+            '                                to be great and wonderful explained description. <br/>',
         created_date: 'Sep 16, 2021',
         name: 'Store Dashboard',
         category: 'UI/UX Design',
