@@ -94,6 +94,7 @@ import Sidebar from '../components/Sidebar.vue';
 import Navbar from '../components/Navbar.vue';
 import * as helpers from "../assets/js/utils/helpers";
 import {useRoute, useRouter} from "vue-router";
+import {useGlobalStore} from "../stores/globalStore.js";
 
 const route = useRoute();
 const router = useRouter();
@@ -223,12 +224,34 @@ const uiToggleSidebar = () => {
   BODY.classList.toggle(SIDEBAR_OPEN_CLASS);
 }
 
-onMounted(() => {
+const globalStore = useGlobalStore()
+
+onMounted(async () => {
   uiInitSidebar()
   uiInitSidebarNav()
+
+  if (!localStorage.getItem('auth')) {
+    console.log('NOT AUTHENTICATED');
+    return false;
+  }
+
+  const response = await globalStore.currentUser()
+  if (!response.status) {
+    logout()
+  }
 })
 
-const logout = () => {
-  router.push('/')
+const logout = async () => {
+  const response = await globalStore.logout()
+
+  if (response.status) {
+    localStorage.removeItem('auth');
+    localStorage.removeItem('token');
+    await router.push({name: 'login'});
+  } else {
+    console.log('Cannot logout');
+  }
+
+
 }
 </script>

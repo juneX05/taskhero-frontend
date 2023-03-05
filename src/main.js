@@ -10,6 +10,7 @@ const pinia = createPinia()
 
 import App from './App.vue'
 import {useGlobalStore} from "./stores/globalStore";
+import axios from "axios";
 
 const app = createApp(App)
 app.use(pinia)

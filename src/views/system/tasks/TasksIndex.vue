@@ -2,7 +2,7 @@
 import Layout from '../../../layouts/Main.vue'
 import { useRoute, useRouter } from 'vue-router';
 import { ref } from 'vue'
-import {useTasksStore} from "../../../stores/tasksStore";
+import {useTasksStore} from "../../../stores/tasksStore.js";
 import AssignedList from "../../../components/AssignedList.vue";
 
 defineProps({

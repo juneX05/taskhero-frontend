@@ -11,7 +11,7 @@
           :class=" { 'border border-error': error, 'border-slate-300 dark:border-navy-450' : !error, 'pl-9': icon } "
           class="form-input peer w-full rounded-lg border  bg-transparent px-3 py-2 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary  dark:hover:border-navy-400 dark:focus:border-accent"
           :placeholder="placeholder"
-          type="text"
+          :type="type"
       />
       <span
           v-if="icon"
@@ -55,7 +55,7 @@ const value = computed({
 })
 
 onMounted(() => {
-  if (props.type == 'date') {
+  if (props.type === 'date') {
     const element = document.querySelector("#" + props.id);
     element._datepicker = flatpickr(element);
   }

@@ -27,6 +27,11 @@ import SimpleBar from "simplebar";
 import dayjs from "dayjs";
 
 /**
+ * Axios Library
+ */
+import axios from "axios";
+
+/**
  * Code highlighting library
  * JUST FOR DEMO PURPOSE ONLY FOR HIGHLIGHTING CODE
  * IF YOU DON'T NEED THIS IN THE YOUR APPLICATION
@@ -102,6 +107,18 @@ import * as tooltip from "./components/tooltip";
 // hljs.registerLanguage("xml", xml);
 // hljs.registerLanguage("javascript", javascript);
 // hljs.configure({ ignoreUnescapedHTML: true });
+
+window.axios = axios
+    .create({
+      baseURL: 'http://127.0.0.1:8000/api',
+      withCredentials: true,
+    })
+
+window.axios.interceptors.request.use(function (config) {
+  const token = localStorage.getItem('token');
+  config.headers.Authorization =  token ? `Bearer ${token}` : '';
+  return config;
+});
 
 window.Sortable = Sortable;
 /**
