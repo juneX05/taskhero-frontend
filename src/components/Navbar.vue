@@ -26,9 +26,11 @@
         <p
             class="font-medium text-slate-700 line-clamp-1 dark:text-navy-100"
         >
-          Konnor Guzman
+          {{ globalStore.user.name }}
         </p>
-        <p class="mt-0.5 text-xs">Last seen recently</p>
+        <p class="mt-0.5 text-xs">
+          {{ globalStore.user.user_type }}
+        </p>
       </div>
     </div>
   </div>
@@ -746,9 +748,10 @@
 </template>
 
 <script setup>
-import {onMounted} from "vue";
+import {onMounted, reactive} from "vue";
 import {Popper} from "../assets/js/components/popper";
 import Tab from "../assets/js/components/tab";
+import {useGlobalStore} from "../stores/globalStore.js";
 
 const SIDEBAR_OPEN_CLASS = "is-sidebar-open";
 
@@ -805,6 +808,8 @@ const _uiInitNotificationTab = () => {
     new Tab(tabWrapper);
   }
 }
+
+const globalStore = useGlobalStore();
 
 onMounted( () => {
   _uiInitDarkModeBtn()

@@ -65,7 +65,125 @@ const menus = [
                 icon: icons.home
             }
         ]
-    }
+    },
+    {
+        type: 'header',
+        title: 'CONFIGURATIONS',
+        name: 'menu',
+    },
+    {
+        type: 'link',
+        link: '#',
+        title: 'Users',
+        name: 'users',
+        icon: icons.user,
+        permission: 'view_users',
+        children: [
+            {
+                type: 'link',
+                link: '/users',
+                title: 'All Users',
+                name: 'all_users',
+                icon: '',
+                permission:'view_users',
+            },
+            {
+                type: 'link',
+                link: '/users/create',
+                title: 'Create User',
+                name: 'create_user',
+                icon: '',
+                permission:'create_user',
+            }
+        ]
+    },
+    {
+        type: 'link',
+        link: '#',
+        title: 'Permissions',
+        name: 'permissions',
+        icon: icons.lock,
+        permission:'view_permissions',
+        children: [
+            {
+                type: 'link',
+                link: '/permissions/index',
+                title: 'All Permissions',
+                name: 'all_permissions',
+                icon: '',
+                permission:'view_permissions',
+            },
+            {
+                type: 'link',
+                link: '/permissions/create',
+                title: 'Create Permission',
+                name: 'create_permission',
+                icon: '',
+                permission:'create_permission',
+            }
+        ]
+    },
+    {
+        type: 'link',
+        link: '#',
+        title: 'Modules',
+        name: 'modules',
+        icon: icons.module,
+        permission:'view_modules',
+        children: [
+            {
+                type: 'link',
+                link: '/modules/index',
+                title: 'All Modules',
+                name: 'all_modules',
+                icon: '',
+                permission:'view_modules',
+            },
+            {
+                type: 'link',
+                link: '/modules/create',
+                title: 'Create Module',
+                name: 'create_module',
+                icon: '',
+                permission:'create_modules',
+            }
+        ]
+    },
+    {
+        type: 'link',
+        link: '#',
+        title: 'Roles',
+        name: 'roles',
+        icon: icons.role,
+        permission:'view_roles',
+        children: [
+            {
+                type: 'link',
+                link: '/roles/index',
+                title: 'All Roles',
+                name: 'all_roles',
+                icon: '',
+                permission:'view_roles',
+            },
+            {
+                type: 'link',
+                link: '/roles/create',
+                title: 'Create Role',
+                name: 'create_role',
+                icon: '',
+                permission:'create_role',
+            }
+        ]
+    },
+    {
+        type: 'link',
+        link: '/menus/manage_menus',
+        title: 'Menus',
+        name: 'menus',
+        icon: icons.menu,
+        permission:'manage_menus',
+    },
+
 ]
 
 export default menus

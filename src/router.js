@@ -1,45 +1,28 @@
 import {createRouter, createWebHistory} from 'vue-router'
 
 import NotFound from './views/NotFound.vue'
-import Login from './views/core/auth/Login.vue'
-import Dashboard from './views/system/dashboard/Dashboard.vue'
-import ForgotPassword from './views/core/auth/ForgotPassword.vue'
 
-import TasksIndex from './views/system/tasks/TasksIndex.vue'
-import TasksCreate from './views/system/tasks/TasksCreate.vue'
-import TasksEdit from './views/system/tasks/TasksEdit.vue'
-import TasksView from './views/system/tasks/TasksView.vue'
-import MyTasks from './views/system/tasks/MyTasks.vue'
+import auth_routes from './views/core/auth/__routes.js'
+import projects_routes from './views/system/projects/__routes.js'
+import tasks_routes from './views/system/tasks/__routes.js'
+import users_routes from "./views/core/users/__routes.js";
+import dashboard_routes from "./views/system/dashboard/__routes.js";
 
-import ProjectsIndex from './views/system/projects/ProjectsIndex.vue'
-import ProjectsCreate from './views/system/projects/ProjectsCreate.vue'
-import ProjectsView from './views/system/projects/ProjectsView.vue'
-import ProjectsBoard from './views/system/projects/ProjectsBoard.vue'
+const module_routes = [
+    ...auth_routes,
+    ...projects_routes,
+    ...tasks_routes,
+    ...users_routes,
+    ...dashboard_routes,
+];
+
+const routes = [
+    { path: '/:pathMatch(.*)*', component: NotFound }
+];
 
 const router = createRouter({
     history: createWebHistory(),
-    routes:[
-        {path:'/', name:'login', component: Login, meta:{auth:false}},
-        {path:'/dashboard', name:'dashboard', component: Dashboard, meta:{auth:true}},
-        {path:'/forgot-password', name:'forgot-password', component: ForgotPassword, meta:{auth:false}},
-
-        /** Tasks Routes */
-        {path:'/tasks/index', name:'tasks-index', component: TasksIndex, meta:{auth:true}},
-        {path:'/tasks/create', name:'tasks-create', component: TasksCreate, meta:{auth:true}},
-        {path:'/tasks/:id/view', name:'tasks-view', component: TasksView, meta:{auth:true}},
-        {path:'/tasks/:id/edit', name:'tasks-edit', component: TasksEdit, meta:{auth:true}},
-        {path:'/my-tasks', name:'my-tasks', component: MyTasks, meta:{auth:true}},
-        /** End of Tasks Routes **/
-
-        /** Projects Routes */
-        {path:'/projects/index', name:'projects-index', component: ProjectsIndex, meta:{auth:true}},
-        {path:'/projects/create', name:'projects-create', component: ProjectsCreate, meta:{auth:true}},
-        {path:'/projects/:id/view', name:'projects-view', component: ProjectsView, meta:{auth:true}},
-        {path:'/projects/:id/board', name:'projects-board', component: ProjectsBoard, meta:{auth:true}},
-        /** End of Projects Routes **/
-
-        { path: '/:pathMatch(.*)*', component: NotFound }
-    ]
+    routes: [...module_routes, ...routes]
 })
 
 router.beforeEach((to, from, next) => {

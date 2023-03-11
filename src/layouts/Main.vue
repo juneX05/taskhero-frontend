@@ -227,6 +227,11 @@ const uiToggleSidebar = () => {
 const globalStore = useGlobalStore()
 
 onMounted(async () => {
+  const response = await globalStore.currentUser()
+  if (!response.status) {
+    await logout()
+  }
+
   uiInitSidebar()
   uiInitSidebarNav()
 
@@ -234,24 +239,19 @@ onMounted(async () => {
     console.log('NOT AUTHENTICATED');
     return false;
   }
-
-  const response = await globalStore.currentUser()
-  if (!response.status) {
-    logout()
-  }
 })
 
 const logout = async () => {
+  localStorage.removeItem('auth');
   const response = await globalStore.logout()
 
   if (response.status) {
-    localStorage.removeItem('auth');
-    localStorage.removeItem('token');
     await router.push({name: 'login'});
+
+    localStorage.removeItem('token');
   } else {
     console.log('Cannot logout');
   }
-
 
 }
 </script>

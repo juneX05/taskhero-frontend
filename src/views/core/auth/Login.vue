@@ -3,6 +3,7 @@ import { useRoute, useRouter } from 'vue-router';
 import {inject, reactive, ref} from 'vue'
 import {useGlobalStore} from "../../../stores/globalStore.js";
 import InputField from "../../../components/inputs/InputField.vue";
+import Notifier from "../../../components/Notifier.vue";
 
 defineProps({
   msg: String,
@@ -15,24 +16,23 @@ const form = reactive({})
 
 const globalStore = useGlobalStore();
 
-const message = ref()
-const errors = reactive({})
+const errors = ref({})
+const response = ref({})
 
 const submit = async data => {
-  const response = await globalStore.login(form);
-  if (!response.status) {
-    Object.keys(response.errors).forEach( (item) => {
-      errors[item] = response.errors[item]
+  response.value = await globalStore.login(form);
+  if (!response.value.status) {
+    Object.keys(response.value.errors).forEach( (item) => {
+      errors[item] = response.value.errors[item]
     })
   } else {
     setTimeout(() => {
       localStorage.setItem('auth', "true");
-      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('token', response.value.data.token);
       router.push({name: 'dashboard'});
       globalStore.loading = false;
     },1500);
   }
-  message.value = response.message
 }
 </script>
 
@@ -69,8 +69,10 @@ const submit = async data => {
           </p>
         </div>
       </div>
-      <div class="card mt-5 rounded-lg p-5 lg:p-7">
-        <form @submit.prevent = "submit">
+      <div class="card mt-5 rounded-lg">
+        <Notifier :response="response" />
+
+        <form @submit.prevent = "submit" class="mt-4 px-5 py-2 lg:px-7">
           <div class="space-y-3 flex flex-col">
             <InputField
                 v-model="form.email"
