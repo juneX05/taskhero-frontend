@@ -3,6 +3,13 @@ import Layout from '../../../layouts/Main.vue'
 import {useRoute, useRouter} from 'vue-router';
 import {onMounted, reactive, ref} from "vue";
 import {useUsersStore} from "./__usersStore.js";
+import LoaderComponent from "../../../components/LoaderComponent.vue";
+import EditAccountDetails from "./components/EditAccountDetails.vue";
+import CompleteUserRegistration from "./components/CompleteUserRegistration.vue";
+import DeactivateUser from "./components/DeactivateUser.vue";
+import ActivateUser from "./components/ActivateUser.vue";
+import ManageUserPermissions from "./components/ManageUserPermissions.vue";
+import ManageUserRoles from "./components/ManageUserRoles.vue";
 
 defineProps({
   msg: String,
@@ -16,17 +23,6 @@ const usersStore = useUsersStore()
 
 let user = ref({})
 
-onMounted(async () => {
-  await usersStore.getUser(record_id);
-  let record = usersStore.record
-  console.log(record);
-  user.value = {
-    ...usersStore.record.user,
-    permissions: usersStore.record.permissions,
-    roles: usersStore.record.roles,
-  }
-})
-
 const submit = () => {
   router.push({name: 'tasks-index'})
 }
@@ -34,6 +30,25 @@ const submit = () => {
 const formatDate = (date) => {
   return dayjs(date).format('DD/MM/YYYY')
 }
+
+const loading = ref(false);
+
+const init = async () => {
+  loading.value = true;
+  await usersStore.getUser(record_id);
+  let record = usersStore.record
+  console.log(record);
+  user.value = {
+    ...usersStore.record.user,
+    user_permissions: usersStore.record.permissions,
+    user_roles: usersStore.record.roles,
+  }
+  loading.value = false;
+}
+
+onMounted(async () => {
+  await init();
+})
 
 </script>
 
@@ -89,11 +104,12 @@ const formatDate = (date) => {
                 <h2
                     class="text-base font-medium tracking-wide text-slate-700 line-clamp-1 dark:text-navy-100"
                 >
-                  Details
+                  Account Details
                 </h2>
 
               </div>
-              <div class="mt-4 min-w-full overflow-x-auto rounded-lg border border-slate-200 dark:border-navy-500">
+              <LoaderComponent v-if="loading" />
+              <div v-else class="mt-4 min-w-full overflow-x-auto rounded-lg border border-slate-200 dark:border-navy-500">
                 <table class="is-zebra w-full text-left">
                   <tbody>
                   <tr>
@@ -140,19 +156,14 @@ const formatDate = (date) => {
                   Permissions
                 </h2>
 
-                <a
-                    v-if="user.permissions && user.permissions.length > 0"
-                    href="/projects/edit.html"
-                    class="flex h-8 p-4 ml-2 items-center justify-center rounded-lg bg-warning hover:bg-warning-focus text-white"
-                >
-                  <i class="fa fa-edit text-base mr-2"></i> Modify Permissions
-                </a>
-
               </div>
-              <div class="flex mt-4 min-w-full overflow-x-auto rounded-lg border border-slate-200 dark:border-navy-500">
-                <table class="is-zebra w-full text-left" v-if="user.permissions && user.permissions.length > 0">
+
+              <LoaderComponent v-if="loading" />
+              <div v-else class="flex mt-4 min-w-full max-h-[45vh] overflow-x-auto rounded-lg border border-slate-200 dark:border-navy-500">
+                <table class="is-zebra w-full text-left"
+                       v-if="user.user_permissions && user.user_permissions.length > 0">
                   <tbody>
-                  <tr v-for="(permission, index) in user.permissions" :key="index">
+                  <tr v-for="(permission, index) in user.user_permissions" :key="index">
                     <td class="whitespace-nowrap border border-t-0 border-l-0 border-slate-200 px-3 py-3 text-slate-800 dark:border-navy-500 dark:text-navy-100 lg:px-5">
                       <div class=" font-semibold  uppercase">{{ permission.title }}</div>
                       <small>
@@ -182,25 +193,71 @@ const formatDate = (date) => {
                 </h2>
 
               </div>
-              <div class="mt-4 min-w-full space-y-1 overflow-x-auto">
-                <a
-                    href="/projects/edit.html"
-                    class="flex h-8 p-4 ml-2 items-center justify-center rounded-lg bg-warning hover:bg-warning-focus text-white"
-                >
-                  <i class="fa fa-edit text-base mr-2"></i> Edit User
-                </a>
-                <a
-                    href="/projects/edit.html"
-                    class="flex h-8 p-4 ml-2 items-center justify-center rounded-lg bg-success hover:bg-success-focus text-white"
-                >
-                  <i class="fa fa-unlock text-base mr-2"></i> Activate User
-                </a>
-                <a
-                    href="/projects/edit.html"
-                    class="flex h-8 p-4 ml-2 items-center justify-center rounded-lg bg-error hover:bg-error-focus text-white"
-                >
-                  <i class="fa fa-lock text-base mr-2"></i> Deactivate User
-                </a>
+
+              <LoaderComponent v-if="loading" />
+              <div v-else class="mt-4 min-w-full space-y-1 overflow-x-auto">
+
+                <EditAccountDetails
+                    :user="{
+                      name: user.name,
+                      email: user.email,
+                      user_type_id: user.user_type_id,
+                    }"
+                    :user_id="user.urid"
+                    @account-updated="init"
+                />
+
+                <CompleteUserRegistration
+                    v-if="user.status === 'pending'"
+                    :user="{
+                      name: user.name,
+                      email: user.email,
+                      user_type_id: user.user_type_id,
+                    }"
+                    :user_id="user.urid"
+                    @account-updated="init"
+                />
+
+                <DeactivateUser
+                    v-if="user.status === 'active'"
+                    :user="{
+                      name: user.name,
+                      email: user.email,
+                      user_type_id: user.user_type_id,
+                    }"
+                    :user_id="user.urid"
+                    @account-updated="init"
+                />
+
+                <ActivateUser
+                    v-if="user.status === 'inactive'"
+                    :user="{
+                      name: user.name,
+                      email: user.email,
+                      user_type_id: user.user_type_id,
+                    }"
+                    :user_id="user.urid"
+                    @account-updated="init"
+                />
+
+                <ManageUserPermissions
+                    :user="{
+                      name: user.name,
+                      user_permissions: user.user_permissions
+                    }"
+                    :user_id="user.urid"
+                    @account-updated="init"
+                />
+
+                <ManageUserRoles
+                    :user="{
+                      name: user.name,
+                      user_roles: user.user_roles
+                    }"
+                    :user_id="user.urid"
+                    @account-updated="init"
+                />
+
               </div>
             </div>
             <div class="card p-4 mt-4 col-span-6">
@@ -210,29 +267,22 @@ const formatDate = (date) => {
                 >
                   Roles
                 </h2>
-
-
-                <a
-                    v-if="user.roles && user.roles.length > 0"
-                    href="/projects/edit.html"
-                    class="flex h-8 p-4 ml-2 items-center justify-center rounded-lg bg-warning hover:bg-warning-focus text-white"
-                >
-                  <i class="fa fa-edit text-base mr-2"></i> Modify Roles
-                </a>
               </div>
-              <div class="flex mt-4 min-w-full overflow-x-auto rounded-lg border border-slate-200 dark:border-navy-500">
-                <table class="is-zebra w-full text-left" v-if="user.roles && user.roles.length > 0">
+
+              <LoaderComponent v-if="loading" />
+              <div v-else class="flex mt-4 min-w-full overflow-x-auto rounded-lg border border-slate-200 dark:border-navy-500">
+                <table class="is-zebra w-full text-left" v-if="user.user_roles && user.user_roles.length > 0">
                   <tbody>
-                  <tr v-for="(role, index) in user.roles" :key="index">
+                  <tr v-for="(role, index) in user.user_roles" :key="index">
                     <td class="border border-t-0 border-l-0 border-slate-200 px-3 py-3 text-slate-800 dark:border-navy-500 dark:text-navy-100 lg:px-5">
                       <div class="whitespace-nowrap font-semibold  uppercase">{{ role.title }}</div>
                       <small>
                         {{ role.description }}
                       </small>
                     </td>
-<!--                    <td class="whitespace-nowrap border border-l-0 border-slate-200 px-3 py-3 dark:border-navy-500 lg:px-5">-->
-<!--                      {{ role.state }}-->
-<!--                    </td>-->
+                    <!--                    <td class="whitespace-nowrap border border-l-0 border-slate-200 px-3 py-3 dark:border-navy-500 lg:px-5">-->
+                    <!--                      {{ role.state }}-->
+                    <!--                    </td>-->
                   </tr>
                   </tbody>
                 </table>

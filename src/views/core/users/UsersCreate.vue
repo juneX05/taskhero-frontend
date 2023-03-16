@@ -51,6 +51,7 @@ const submit = async () => {
     if (response.value.status === false) {
       userStore.loading = false;
       if (response.value.message === "ERR_VALIDATION") {
+        response.value.message = 'Validation Error'
         errors.value = response.value.errors
       }
     } else {

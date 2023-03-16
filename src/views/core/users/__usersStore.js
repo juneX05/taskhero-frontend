@@ -12,13 +12,6 @@ export const useUsersStore = defineStore("usersStore", {
         }
     },
     getters:{
-        getMyTasks: (state) => {
-            return (user_id) => {
-                const index = state.users.findIndex( item => item.id == id );
-                if (index !== -1)  return state.users[index];
-                return null
-            }
-        },
         validator: () => {
             return (data) => {
                 let errors = {
@@ -98,6 +91,46 @@ export const useUsersStore = defineStore("usersStore", {
             const response = await useGlobalStore().sendRequest(url);
             if (response.status) this.splash = response.data;
             console.log(response);
-        }
+        },
+        async updateAccountDetails (id,data) {
+            const url = '/users/' + id + '/update-account-details'
+            const type = 'post'
+            return await useGlobalStore().sendRequest(url,type,data);
+        },
+        async completeUserRegistration (id) {
+            const url = '/users/' + id + '/complete-user-registration'
+            const type = 'post'
+            return await useGlobalStore().sendRequest(url,type);
+        },
+        async deactivateUser (id, data) {
+            const url = '/users/' + id + '/deactivate'
+            const type = 'post'
+            return await useGlobalStore().sendRequest(url,type, data);
+        },
+        async activateUser (id, data) {
+            const url = '/users/' + id + '/activate'
+            const type = 'post'
+            return await useGlobalStore().sendRequest(url,type, data);
+        },
+        async getAllPermissions() {
+            const url = '/permissions'
+            const type = 'get'
+            return await useGlobalStore().sendRequest(url,type);
+        },
+        async getAllRoles() {
+            const url = '/roles'
+            const type = 'get'
+            return await useGlobalStore().sendRequest(url,type);
+        },
+        async manageUserPermissions (id, data) {
+            const url = '/users/' + id + '/change-permissions'
+            const type = 'post'
+            return await useGlobalStore().sendRequest(url,type, data);
+        },
+        async manageUserRoles (id, data) {
+            const url = '/users/' + id + '/change-roles'
+            const type = 'post'
+            return await useGlobalStore().sendRequest(url,type, data);
+        },
     }
 })
