@@ -1,40 +1,52 @@
 <script setup>
 import DrawerComponent from "../../../../components/DrawerComponent.vue";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import {useUsersStore} from "../__usersStore.js";
 import Notifier from "../../../../components/Notifier.vue";
 import CheckboxField from "../../../../components/inputs/CheckboxField.vue";
+import RadioField from "../../../../components/inputs/RadioField.vue";
 
 const emit = defineEmits(['accountUpdated'])
 
 const props = defineProps({
   user: {type: Object},
   user_id: {type: String},
+  permission_status: {type: Array},
 })
 
 const form = ref({
-  permissions: []
+  permissions: {}
 })
 const errors = ref({})
 
 const userStore = useUsersStore()
 
 const permissions = ref([])
+const user_permissions = ref([])
 
 const init = async () => {
-  const response = await userStore.getAllPermissions()
+  const response = await userStore.getUserPermissions(props.user_id)
   if (response.status) {
-    permissions.value = response.data
-  }
+    permissions.value = response.data.all_permissions
+    user_permissions.value = response.data.user_permissions
 
-  form.value.permissions = permissions.value.map((permission) => {
-    let user_permission = props.user.user_permissions.filter((item) => item.id === permission.id)
-    return {id:permission.id, selected: user_permission.length > 0}
-  })
+    props.user.user_permissions.forEach( (permission) => {
+      form.value.permissions[permission.id] = "given"
+    })
+
+    user_permissions.value.forEach( (permission) => {
+      form.value.permissions[permission.id] = permission.status === 1 ? 'given' : 'denied'
+    })
+  }
 }
 
 const destroy = async () => {
-  form.value = response.value = {};
+  form.value = {
+    permissions: {}
+  };
+  user_permissions.value = [];
+  permissions.value = [];
+  response.value = {};
 }
 
 const page = {
@@ -92,15 +104,40 @@ const submit = async () => {
                v-if="permissions.length > 0">
           <tbody>
           <tr v-for="(permission, index) in permissions" :key="index">
-            <td class="whitespace-nowrap border border-l-0 border-slate-200 px-3 py-3 dark:border-navy-500 lg:px-5">
-              <CheckboxField
-                  :value="permission.id"
-                  v-model="form.permissions[index].selected"
+            <td class=" border border-l-0 border-slate-200 px-3 py-3 dark:border-navy-500 lg:px-5">
+              <RadioField
+                  :value="'given'"
+                  v-model="form.permissions[permission.id]"
                   :id="permission.name"
                   :error="null"
-                  :title="''"
-                  :multiple="true"
+                  :title="'Given'"
               />
+              <RadioField
+                  :value="'denied'"
+                  v-model="form.permissions[permission.id]"
+                  :id="permission.name"
+                  :error="null"
+                  :title="'Denied'"
+              />
+              <RadioField
+                  v-if="user_permissions.filter((item) => item.id === permission.id).length > 0"
+                  :value="'remove'"
+                  v-model="form.permissions[permission.id]"
+                  :id="permission.name"
+                  :error="null"
+                  :title="'Remove'"
+              />
+              <template v-else>
+                <RadioField
+                    v-if="user_permissions.filter((item) => item.id === permission.id).length === 0"
+                    :value="undefined"
+                    v-model="form.permissions[permission.id]"
+                    :id="permission.name"
+                    :error="null"
+                    :title="'Not Given'"
+                />
+              </template>
+
             </td>
             <td class="border border-t-0 border-l-0 border-slate-200 px-3 py-3 text-slate-800 dark:border-navy-500 dark:text-navy-100 lg:px-5">
               <div class=" font-semibold  uppercase">{{ permission.title }}</div>

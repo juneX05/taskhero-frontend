@@ -7,7 +7,7 @@
         v-model="value"
         :multiple="multiple"
         :id="id"
-        class="mt-1.5 w-full"
+        class="mt-1.5 w-[70px]"
         :class="{ 'border border-error rounded-lg' : error }"
     >
     </select>

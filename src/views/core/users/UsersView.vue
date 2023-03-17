@@ -22,6 +22,7 @@ const record_id = route.params.id;
 const usersStore = useUsersStore()
 
 let user = ref({})
+const permission_status = ref([])
 
 const submit = () => {
   router.push({name: 'tasks-index'})
@@ -37,12 +38,12 @@ const init = async () => {
   loading.value = true;
   await usersStore.getUser(record_id);
   let record = usersStore.record
-  console.log(record);
   user.value = {
     ...usersStore.record.user,
     user_permissions: usersStore.record.permissions,
     user_roles: usersStore.record.roles,
   }
+  permission_status.value = usersStore.record.permission_status
   loading.value = false;
 }
 
@@ -218,45 +219,50 @@ onMounted(async () => {
                     @account-updated="init"
                 />
 
-                <DeactivateUser
-                    v-if="user.status === 'active'"
-                    :user="{
+                <template v-else>
+
+                  <DeactivateUser
+                      v-if="user.status === 'active'"
+                      :user="{
                       name: user.name,
                       email: user.email,
                       user_type_id: user.user_type_id,
                     }"
-                    :user_id="user.urid"
-                    @account-updated="init"
-                />
+                      :user_id="user.urid"
+                      @account-updated="init"
+                  />
 
-                <ActivateUser
-                    v-if="user.status === 'inactive'"
-                    :user="{
+                  <ActivateUser
+                      v-if="user.status === 'inactive'"
+                      :user="{
                       name: user.name,
                       email: user.email,
                       user_type_id: user.user_type_id,
                     }"
-                    :user_id="user.urid"
-                    @account-updated="init"
-                />
+                      :user_id="user.urid"
+                      @account-updated="init"
+                  />
 
-                <ManageUserPermissions
-                    :user="{
+                  <ManageUserPermissions
+                      :user="{
                       name: user.name,
-                      user_permissions: user.user_permissions
+                      user_permissions: user.user_permissions,
                     }"
-                    :user_id="user.urid"
-                    @account-updated="init"
-                />
+                      :permission_status = "permission_status"
+                      :user_id="user.urid"
+                      @account-updated="init"
+                  />
 
-                <ManageUserRoles
-                    :user="{
+                  <ManageUserRoles
+                      :user="{
                       name: user.name,
                       user_roles: user.user_roles
                     }"
-                    :user_id="user.urid"
-                    @account-updated="init"
-                />
+                      :user_id="user.urid"
+                      @account-updated="init"
+                  />
+                </template>
+
 
               </div>
             </div>

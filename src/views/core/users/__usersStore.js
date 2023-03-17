@@ -77,7 +77,6 @@ export const useUsersStore = defineStore("usersStore", {
             const url = '/users/' + id + '/view'
             const response = await useGlobalStore().sendRequest(url);
             if (response.status) this.record = response.data;
-            console.log(response);
         },
         // since we rely on `this`, we cannot use an arrow function
         async save (data) {
@@ -112,8 +111,8 @@ export const useUsersStore = defineStore("usersStore", {
             const type = 'post'
             return await useGlobalStore().sendRequest(url,type, data);
         },
-        async getAllPermissions() {
-            const url = '/permissions'
+        async getUserPermissions(id) {
+            const url = '/users/' + id + '/get-permissions'
             const type = 'get'
             return await useGlobalStore().sendRequest(url,type);
         },

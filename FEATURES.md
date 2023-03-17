@@ -102,3 +102,4 @@ TASK HERO: FRONTEND (VUE EDITION)
 - [ ] Reports
     - [ ] Tasks Report
     - [ ] Projects Report
+- [ ] TESTS
