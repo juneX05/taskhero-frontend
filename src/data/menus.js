@@ -99,31 +99,13 @@ const menus = [
     },
     {
         type: 'link',
-        link: '#',
+        link: '/permissions',
         title: 'Permissions',
         name: 'permissions',
         icon: icons.lock,
         permission:'view_permissions',
-        children: [
-            {
-                type: 'link',
-                link: '/permissions/index',
-                title: 'All Permissions',
-                name: 'all_permissions',
-                icon: '',
-                permission:'view_permissions',
-            },
-            {
-                type: 'link',
-                link: '/permissions/create',
-                title: 'Create Permission',
-                name: 'create_permission',
-                icon: '',
-                permission:'create_permission',
-            }
-        ]
     },
-    {
+/*    {
         type: 'link',
         link: '#',
         title: 'Modules',
@@ -148,7 +130,7 @@ const menus = [
                 permission:'create_modules',
             }
         ]
-    },
+    },*/
     {
         type: 'link',
         link: '/roles',
@@ -157,14 +139,14 @@ const menus = [
         icon: icons.role,
         permission:'view_roles'
     },
-    {
+   /* {
         type: 'link',
         link: '/menus/manage_menus',
         title: 'Menus',
         name: 'menus',
         icon: icons.menu,
         permission:'manage_menus',
-    },
+    },*/
 
 ]
 

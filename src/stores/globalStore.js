@@ -15,6 +15,7 @@ export const useGlobalStore = defineStore("globalStore", {
             tags: tags,
             user: {},
             permissions: [],
+            dashboard_data: [],
         }
     },
     actions: {
@@ -89,6 +90,9 @@ export const useGlobalStore = defineStore("globalStore", {
 
                 return {status: false, message: message}
             }
-        }
+        },
+        async dashboard() {
+            return await this.sendRequest('/dashboard')
+        },
     }
 })

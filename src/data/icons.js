@@ -66,6 +66,9 @@ const icons = {
     menu: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
               <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
             </svg>`,
+    shield: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6">
+              <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m18.712 4.789-5.924-2.54a2 2 0 0 0-1.576 0L5.288 4.79a2 2 0 0 0-1.2 2.059l.651 5.862a7 7 0 0 0 2.476 4.604l3.505 2.92a2 2 0 0 0 2.56 0l3.505-2.92a7 7 0 0 0 2.476-4.604l.651-5.862a2 2 0 0 0-1.2-2.06Z"/>
+            </svg>`
 }
 
 export default icons

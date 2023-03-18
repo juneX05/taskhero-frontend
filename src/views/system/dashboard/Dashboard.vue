@@ -1,5 +1,16 @@
 <script setup>
 import Layout from '../../../layouts/Main.vue'
+import {onMounted, ref} from "vue";
+import {useGlobalStore} from "../../../stores/globalStore.js";
+
+const data = ref({});
+
+onMounted(async () => {
+  const response = await useGlobalStore().dashboard()
+  if (response.status) {
+    data.value = response.data
+  }
+})
 </script>
 
 <template>
@@ -14,20 +25,66 @@ import Layout from '../../../layouts/Main.vue'
         >
           <div class="card flex-row justify-between p-4">
             <div>
-              <p class="text-xs+ uppercase">New Followers</p>
+              <p class="text-xs+ uppercase">Tasks</p>
               <div class="mt-8 flex items-baseline space-x-1">
                 <p
                     class="text-2xl font-semibold text-slate-700 dark:text-navy-100"
                 >
-                  1.3k
+                  {{ data.tasks }}
                 </p>
-                <p class="text-xs text-success">+21%</p>
+<!--                <p class="text-xs text-success">+21%</p>-->
               </div>
             </div>
             <div
                 class="mask is-squircle flex h-10 w-10 items-center justify-center bg-warning/10"
             >
-              <i class="fa-solid fa-user text-xl text-warning"></i>
+              <i class="fa-solid fa-list text-xl text-warning"></i>
+            </div>
+            <div class="absolute bottom-0 right-0 overflow-hidden rounded-lg">
+              <i
+                  class="fa-solid fa-list translate-x-1/4 translate-y-1/4 text-5xl opacity-15"
+              ></i>
+            </div>
+          </div>
+          <div class="card flex-row justify-between p-4">
+            <div>
+              <p class="text-xs+ uppercase">Projects</p>
+              <div class="mt-8 flex items-baseline space-x-1">
+                <p
+                    class="text-2xl font-semibold text-slate-700 dark:text-navy-100"
+                >
+                  {{ data.projects }}
+                </p>
+<!--                <p class="text-xs text-success">+4%</p>-->
+              </div>
+            </div>
+            <div
+                class="mask is-squircle flex h-10 w-10 items-center justify-center bg-info/10"
+            >
+              <i class="fa-solid fa-folder text-xl text-info"></i>
+            </div>
+            <div class="absolute bottom-0 right-0 overflow-hidden rounded-lg">
+              <i
+                  class="fa-solid fa-folder translate-x-1/4 translate-y-1/4 text-5xl opacity-15"
+              ></i>
+            </div>
+          </div>
+          <div class="card flex-row justify-between p-4">
+            <div>
+              <p class="text-xs+ uppercase">Users</p>
+              <div class="mt-8 flex items-baseline space-x-1">
+                <p
+                    class="text-2xl font-semibold text-slate-700 dark:text-navy-100"
+                >
+                  {{ data.users }}
+                </p>
+<!--                <p class="text-xs text-success">+8%</p>-->
+              </div>
+            </div>
+            <div
+                class="mask is-squircle flex h-10 w-10 items-center justify-center bg-success/10"
+            >
+              <i class="fa-solid fa-user text-xl text-success"></i>
             </div>
             <div class="absolute bottom-0 right-0 overflow-hidden rounded-lg">
               <i
@@ -37,70 +94,24 @@ import Layout from '../../../layouts/Main.vue'
           </div>
           <div class="card flex-row justify-between p-4">
             <div>
-              <p class="text-xs+ uppercase">Views</p>
+              <p class="text-xs+ uppercase">HIGH PRIORITY TASKS</p>
               <div class="mt-8 flex items-baseline space-x-1">
                 <p
                     class="text-2xl font-semibold text-slate-700 dark:text-navy-100"
                 >
-                  30.6m
+                  {{ data.high_priority_tasks }}
                 </p>
-                <p class="text-xs text-success">+4%</p>
-              </div>
-            </div>
-            <div
-                class="mask is-squircle flex h-10 w-10 items-center justify-center bg-info/10"
-            >
-              <i class="fa-solid fa-eye text-xl text-info"></i>
-            </div>
-            <div class="absolute bottom-0 right-0 overflow-hidden rounded-lg">
-              <i
-                  class="fa-solid fa-eye translate-x-1/4 translate-y-1/4 text-5xl opacity-15"
-              ></i>
-            </div>
-          </div>
-          <div class="card flex-row justify-between p-4">
-            <div>
-              <p class="text-xs+ uppercase">Likes</p>
-              <div class="mt-8 flex items-baseline space-x-1">
-                <p
-                    class="text-2xl font-semibold text-slate-700 dark:text-navy-100"
-                >
-                  4.3m
-                </p>
-                <p class="text-xs text-success">+8%</p>
-              </div>
-            </div>
-            <div
-                class="mask is-squircle flex h-10 w-10 items-center justify-center bg-success/10"
-            >
-              <i class="fa-solid fa-thumbs-up text-xl text-success"></i>
-            </div>
-            <div class="absolute bottom-0 right-0 overflow-hidden rounded-lg">
-              <i
-                  class="fa-solid fa-thumbs-up translate-x-1/4 translate-y-1/4 text-5xl opacity-15"
-              ></i>
-            </div>
-          </div>
-          <div class="card flex-row justify-between p-4">
-            <div>
-              <p class="text-xs+ uppercase">Reports</p>
-              <div class="mt-8 flex items-baseline space-x-1">
-                <p
-                    class="text-2xl font-semibold text-slate-700 dark:text-navy-100"
-                >
-                  11.6k
-                </p>
-                <p class="text-xs text-error">-2.3%</p>
+<!--                <p class="text-xs text-error">-2.3%</p>-->
               </div>
             </div>
             <div
                 class="mask is-squircle flex h-10 w-10 items-center justify-center bg-error/10"
             >
-              <i class="fa-solid fa-bug text-xl text-error"></i>
+              <i class="fa-solid fa-tasks text-xl text-error"></i>
             </div>
             <div class="absolute bottom-0 right-0 overflow-hidden rounded-lg">
               <i
-                  class="fa-solid fa-bug translate-x-1/4 translate-y-1/4 text-5xl opacity-15"
+                  class="fa-solid fa-tasks translate-x-1/4 translate-y-1/4 text-5xl opacity-15"
               ></i>
             </div>
           </div>
