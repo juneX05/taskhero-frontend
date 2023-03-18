@@ -30,6 +30,16 @@ TASK HERO: FRONTEND (VUE EDITION)
 - [ ] Change Password
 - [ ] Permissions Management
 - [ ] Roles Management
+  - [x] Create Role
+  - [ ] Roles List
+    - [x] View All Roles
+    - [ ] Filter Roles
+  - [x] View Role Details
+  - [x] Edit Role Details
+  - [x] Manage Role Permissions
+  - [x] Activate Role
+  - [x] Deactivate Role
+  - [ ] Manage Users with Role
 - [ ] Modules Management
 - [ ] Menus Management
 - [ ] User Management
@@ -47,7 +57,7 @@ TASK HERO: FRONTEND (VUE EDITION)
       - [x] Connecting to Server
       - [ ] Handling unknown user details fetching
       - [ ] Implementing skeleton loaders
-    - [ ] Complete User Registration
+    - [x] Complete User Registration
     - [x] Deactivate User
     - [x] Activate User
     - [x] Change User Permissions

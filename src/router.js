@@ -7,6 +7,7 @@ import projects_routes from './views/system/projects/__routes.js'
 import tasks_routes from './views/system/tasks/__routes.js'
 import users_routes from "./views/core/users/__routes.js";
 import dashboard_routes from "./views/system/dashboard/__routes.js";
+import roles_routes from "./views/core/roles/__routes.js";
 
 const module_routes = [
     ...auth_routes,
@@ -14,6 +15,7 @@ const module_routes = [
     ...tasks_routes,
     ...users_routes,
     ...dashboard_routes,
+    ...roles_routes,
 ];
 
 const routes = [

@@ -151,29 +151,11 @@ const menus = [
     },
     {
         type: 'link',
-        link: '#',
+        link: '/roles',
         title: 'Roles',
         name: 'roles',
         icon: icons.role,
-        permission:'view_roles',
-        children: [
-            {
-                type: 'link',
-                link: '/roles/index',
-                title: 'All Roles',
-                name: 'all_roles',
-                icon: '',
-                permission:'view_roles',
-            },
-            {
-                type: 'link',
-                link: '/roles/create',
-                title: 'Create Role',
-                name: 'create_role',
-                icon: '',
-                permission:'create_role',
-            }
-        ]
+        permission:'view_roles'
     },
     {
         type: 'link',

@@ -42,3 +42,7 @@ export function makeId(length) {
   }
   return result;
 }
+
+export function formatDate(date) {
+  return dayjs(date).format('DD/MM/YYYY')
+}
