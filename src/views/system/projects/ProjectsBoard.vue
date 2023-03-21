@@ -3,8 +3,8 @@ import Layout from '../../../layouts/Main.vue'
 import { useRoute, useRouter } from 'vue-router';
 import { ref } from 'vue'
 import AssignedList from "../../../components/AssignedList.vue";
-import {useProjectsStore} from "../../../stores/projectsStore.js";
 import KanbanBoard from "../../../components/KanbanBoard.vue";
+import {useProjectsStore} from "./__projectsStore.js";
 
 defineProps({
   msg: String,

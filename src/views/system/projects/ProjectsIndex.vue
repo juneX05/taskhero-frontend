@@ -1,10 +1,11 @@
 <script setup>
 import Layout from '../../../layouts/Main.vue'
 import { useRoute, useRouter } from 'vue-router';
-import { ref } from 'vue'
+import {onMounted, ref} from 'vue'
 import AssignedList from "../../../components/AssignedList.vue";
-import {useProjectsStore} from "../../../stores/projectsStore.js";
-
+import {useProjectsStore} from "./__projectsStore.js";
+import LoaderComponent from "../../../components/LoaderComponent.vue";
+import {formatDate} from "../../../assets/js/utils/helpers.js"
 defineProps({
   msg: String,
 })
@@ -13,8 +14,19 @@ const route = useRoute();
 const router = useRouter();
 
 const projectsStore = useProjectsStore()
+const records = ref([])
+const loading = ref(false)
 
-const projects = projectsStore.projects
+const init = async () => {
+  loading.value = true
+  await projectsStore.getAllData()
+  records.value = projectsStore.records
+  loading.value = false;
+}
+
+onMounted( async () => {
+  await init()
+})
 
 const submit = () => {
   router.push({name: 'dashboard'})
@@ -47,7 +59,7 @@ const splitDateTime = (date) => {
       >
         <div>
           <h3 class="text-xl font-semibold text-slate-700 dark:text-navy-100">
-            Projects Board
+            Projects
           </h3>
           <p class="mt-1 hidden sm:block">List of your ongoing projects</p>
         </div>
@@ -77,7 +89,8 @@ const splitDateTime = (date) => {
       >
 
 
-        <div v-for="(project, index) in projects" :key="index"
+        <LoaderComponent v-if="loading" />
+        <div v-else v-for="(item, index) in records" :key="index"
             class="card shadow-xl">
           <div
               class="flex flex-1 flex-col justify-between rounded-lg bg-white dark:bg-transparent p-4 sm:p-5"
@@ -86,41 +99,42 @@ const splitDateTime = (date) => {
               <div class="flex items-start justify-between">
                 <img
                     class="h-12 w-12 rounded-lg object-cover object-center"
-                    src="/src/assets/images/800x600.png"
+                    :src="item.media.url"
                     alt="image"
                 />
                 <p class="text-xs+ text-slate-500">
-                  {{ project.created_date }}
+                  {{ formatDate(item.created_at) }}
                 </p>
               </div>
-              <router-link :to="{ name:'projects-view', params:{id:project.id} }">
+              <router-link :to="{ name:'projects-view', params:{id:item.id} }">
                 <h3 class="mt-3 font-medium dark:text-white text-slate-500 line-clamp-2">
-                  {{ project.name }}
+                  {{ item.title }}
                 </h3>
                 <p class="text-xs+ dark:text-amber-50 text-slate-800">
-                  {{ project.category }}
+                  {{ item.category.title }}
                 </p>
               </router-link>
             </div>
             <div>
-              <div class="mt-4">
+              <div class="mt-4" v-if="item.progress">
                 <p class="text-xs+ text-slate-500 dark:text-white">Progress</p>
                 <div class="progress my-2 h-1.5 dakr:bg-white/30 bg-black/30 ">
-                  <span :style="'width : ' + project.progress + '%'" class="rounded-full dark:bg-white bg-black"></span>
+                  <span :style="'width : ' + item.progress + '%'" class="rounded-full dark:bg-white bg-black"></span>
                 </div>
                 <p class="text-right text-xs+ font-medium dark:text-white">
-                  {{ project.progress }}%</p>
+                  {{ item.progress }}%</p>
               </div>
 
               <div class="mt-5 flex flex-wrap -space-x-3">
-                <AssignedList :max_users="2" :users="project.assigned" />
+                <AssignedList :max_users="2" :users="item.assignees" />
               </div>
 
-              <div class="mt-4 flex items-center justify-between space-x-2">
+              <div class="mt-4 flex items-center justify-between space-x-2"  v-if="item.duration_left">
                 <div
+
                     class="badge h-5.5 rounded-full bg-black/20 px-2 text-xs+ text-black dark:text-white"
                 >
-                  {{ project.duration_left }}
+                  {{ item.duration_left }}
                 </div>
                 <div>
                   <button

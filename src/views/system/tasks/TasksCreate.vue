@@ -1,14 +1,13 @@
 <script setup>
 import Layout from '../../../layouts/Main.vue'
 import { useRoute, useRouter } from 'vue-router';
-import {useTasksStore} from "../../../stores/tasksStore.js";
-import {onMounted, reactive} from "vue";
-import {useGlobalStore} from "../../../stores/globalStore.js";
-import {useProjectsStore} from "../../../stores/projectsStore.js";
+import {onMounted, reactive, ref, watch} from "vue";
 import SelectField from "../../../components/inputs/SelectField.vue";
 import InputField from "../../../components/inputs/InputField.vue";
-import SelectAssignUsers from "../../../components/SelectAssignUsers.vue";
 import WYSIWYG from "../../../components/inputs/WYSIWYG.vue";
+import {useTasksStore} from "./__tasksStore.js";
+import Notifier from "../../../components/Notifier.vue";
+import { Validator } from "../../../assets/js/utils/validator.js";
 
 defineProps({
   msg: String,
@@ -18,44 +17,71 @@ const route = useRoute();
 const router = useRouter();
 
 const tasksStore = useTasksStore()
-const tasks = tasksStore.tasks
 
-const userStore = useGlobalStore()
-const users = userStore.users
-const tags = userStore.tags
+const splash = ref({})
+const loading = ref(false)
 
-const projectsStore = useProjectsStore()
-const projects = projectsStore.projects
-
-const init = () => {
-
-}
-
-onMounted( () => {
-  init()
-})
-
-let task = reactive({
-  tags: [],
-  assigned: [],
-})
-
-const errors = reactive({})
-
-const submit = () => {
-  const { data, count } = tasksStore.validator(task);
-  Object.keys(data).forEach( (item) => {
-    errors[item] = data[item]
-  })
-
-  if(count > 0) {
-    console.log('TASK', task)
-    console.log('MESSAGES',data)
-  } else {
-    tasksStore.save(task)
+const init = async () => {
+  const response = await tasksStore.getSplashData()
+  console.log(response);
+  if (response.status) {
+    splash.value = response.data;
   }
-
 }
+
+onMounted( async () => {
+  await init()
+})
+
+const form = ref({})
+const errors = ref({})
+const response = ref({})
+
+const validate = (key = null) => {
+  const rules = {
+    title: {required: true,},
+    description: {required: true,},
+    assigned: {required: true, type:'array'},
+    priority_id: {required: true},
+  }
+  const messages = {
+    title: { required: 'Title is required' },
+    description: { required: 'Description is required' },
+    assigned: { required: 'Please select at least one user' },
+    priority_id: { required: 'Priority is required' },
+  }
+  return Validator.make(form.value, rules, messages);
+  // if (key != null) {
+  //   return errors.filter( (item) => item. )
+  // }
+}
+
+const submit = async () => {
+  response.value = {};
+  loading.value = true;
+  errors.value = validate();
+
+  if (Object.keys(errors.value).length === 0) {
+    console.log(form.value);
+    response.value = await tasksStore.save(form.value)
+    if (response.value.status) {
+      setTimeout(async () => {
+        await router.push({name: 'tasks-index'});
+        loading.value = false;
+      },1000);
+    } else {
+      loading.value = false
+    }
+
+  } else {
+    loading.value = false;
+  }
+}
+
+// watch(form, async (newValue, oldValue) => {
+//   const { data, count } = validate();
+//   errors.value = data
+// }, { deep:true })
 </script>
 
 <template>
@@ -82,12 +108,25 @@ const submit = () => {
         <div class="flex justify-center space-x-2">
           <button
               @click="submit"
-              class="btn min-w-[7rem] bg-primary font-medium text-white hover:bg-primary-focus focus:bg-primary-focus active:bg-primary-focus/90 dark:bg-accent dark:hover:bg-accent-focus dark:focus:bg-accent-focus dark:active:bg-accent/90"
+              :disabled="loading"
+              class="btn h-[2.3rem] relative min-w-[7rem] bg-primary font-medium text-white hover:bg-primary-focus focus:bg-primary-focus active:bg-primary-focus/90 dark:bg-accent dark:hover:bg-accent-focus dark:focus:bg-accent-focus dark:active:bg-accent/90"
           >
-            Save
+            <span
+                v-if="loading"
+                class="absolute flex h-3 w-3 items-center justify-center"
+            >
+              <span
+                  class="absolute  h-full w-full animate-ping rounded-full bg-secondary opacity-80"
+              ></span>
+              <span
+                  class="h-2 w-2 rounded-full bg-secondary"
+              ></span>
+            </span>
+            <span v-else>Save</span>
           </button>
         </div>
       </div>
+      <Notifier :response="response" class="mb-4"/>
       <div class="grid grid-cols-12 gap-4 sm:gap-5 lg:gap-6">
         <div class="col-span-12 lg:col-span-8">
           <div class="card">
@@ -99,20 +138,33 @@ const submit = () => {
                       id="taskTitle"
                       placeholder="Enter Title."
                       title="Title"
-                      v-model="task.title"
+                      v-model="form.title"
                       type="text"
                       :error="errors.title"
+                      @change="validate('title')"
                   />
 
                   <WYSIWYG
-                    id="taskDescription"
-                    placeholder="Enter description for the task"
-                    title="Description"
-                    v-model="task.description"
-                    :error="errors.description"
+                      id="taskDescription"
+                      placeholder="Enter description for the task"
+                      title="Description"
+                      v-model="form.description"
+                      :error="errors.description"
                   />
 
-                  <SelectAssignUsers v-model="task.assigned" :error="errors.assigned" />
+                  <SelectField
+                      id="taskUsers"
+                      label-field="name"
+                      :options="splash.users"
+                      placeholder="Select User"
+                      search-field="name"
+                      title="Assigned"
+                      value-field="urid"
+                      v-model="form.assigned"
+                      :multiple="true"
+                      :error="errors.assigned"
+                  />
+
                 </div>
               </div>
             </div>
@@ -124,49 +176,47 @@ const submit = () => {
             <SelectField
                 id="taskPriority"
                 label-field="name"
-                :options="[
-                    {id:1, name:'High'},
-                    {id:2, name:'Medium'},
-                    {id:3, name:'Low'},
-                ]"
+                :options="splash.priorities"
                 placeholder="Select Priority"
                 search-field="name"
                 title="Priority"
-                value-field="id"
-                v-model="task.priority"
+                value-field="urid"
+                v-model="form.priority_id"
                 :multiple="false"
-                :error="errors.priority"
+                :error="errors.priority_id"
             />
 
             <SelectField
-                id="taskProject"
-                label-field="name"
-                :options="projects"
+                id="taskProjects"
+                label-field="title"
+                :options="splash.projects"
                 placeholder="Select Project"
-                search-field="name"
+                search-field="title"
                 title="Project"
-                value-field="id"
-                v-model="task.project"
+                value-field="urid"
+                v-model="form.project_id"
+                :error="errors.project_id"
                 :multiple="false"
             />
 
             <SelectField
-              id="taskTags"
-              label-field="title"
-              :options="tags"
-              placeholder="Select Tags"
-              search-field="title"
-              title="Tags"
-              value-field="id"
-              v-model="task.tags"
-              :multiple="true"
+                id="taskTags"
+                label-field="title"
+                :options="splash.tags"
+                placeholder="Add Tag"
+                search-field="title"
+                title="Tags"
+                value-field="urid"
+                v-model="form.task_tags"
+                :error="errors.task_tags"
+                :multiple="true"
             />
 
             <InputField
                 id="taskStartDate"
                 placeholder="Chose Date..."
                 title="Start Date"
-                v-model="task.start_date"
+                v-model="form.start_date"
                 icon="calendar"
                 type="date"
                 :error="errors.start_date"
@@ -176,7 +226,7 @@ const submit = () => {
                 id="taskEndDate"
                 placeholder="Chose Date..."
                 title="End Date"
-                v-model="task.end_date"
+                v-model="form.end_date"
                 icon="calendar"
                 type="date"
                 :error="errors.end_date"

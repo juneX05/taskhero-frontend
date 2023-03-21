@@ -26,12 +26,13 @@ const submit = async data => {
       errors[item] = response.value.errors[item]
     })
   } else {
-    setTimeout(() => {
+    setTimeout(async () => {
       localStorage.setItem('auth', "true");
       localStorage.setItem('token', response.value.data.token);
-      router.push({name: 'dashboard'});
+      await globalStore.currentUser()
+      await router.push({name: 'dashboard'});
       globalStore.loading = false;
-    },1500);
+    },500);
   }
 }
 </script>

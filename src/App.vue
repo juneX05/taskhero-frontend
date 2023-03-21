@@ -1,7 +1,15 @@
 <script setup>
 import {useGlobalStore} from "./stores/globalStore";
+import {onMounted} from "vue";
 
 const globalStore = useGlobalStore()
+
+onMounted( async () => {
+  const response = await globalStore.currentUser()
+  if (!response.status) {
+    await globalStore.logout()
+  }
+})
 
 </script>
 

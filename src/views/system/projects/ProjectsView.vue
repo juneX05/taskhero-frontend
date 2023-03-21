@@ -2,7 +2,7 @@
 import Layout from '../../../layouts/Main.vue'
 import {useRoute, useRouter} from 'vue-router';
 import {onMounted} from "vue";
-import {useProjectsStore} from "../../../stores/projectsStore.js";
+import {useProjectsStore} from "./__projectsStore.js";
 
 defineProps({
   msg: String,

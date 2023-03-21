@@ -1,14 +1,9 @@
 <script setup>
 import Layout from '../../../layouts/Main.vue'
 import {useRoute, useRouter} from 'vue-router';
-import {useTasksStore} from "../../../stores/tasksStore.js";
 import {onMounted, reactive, ref} from "vue";
-import {useGlobalStore} from "../../../stores/globalStore.js";
-import {useProjectsStore} from "../../../stores/projectsStore.js";
 import SelectField from "../../../components/inputs/SelectField.vue";
 import InputField from "../../../components/inputs/InputField.vue";
-import SelectAssignUsers from "../../../components/SelectAssignUsers.vue";
-import WYSIWYG from "../../../components/inputs/WYSIWYG.vue";
 import icons from "../../../data/icons.js";
 import {useUsersStore} from "./__usersStore.js";
 import Notifier from "../../../components/Notifier.vue";

@@ -1,15 +1,12 @@
 <script setup>
 import Layout from '../../../layouts/Main.vue'
 import { useRoute, useRouter } from 'vue-router';
-import {useTasksStore} from "../../../stores/tasksStore.js";
-import {onMounted, reactive} from "vue";
-import {useGlobalStore} from "../../../stores/globalStore.js";
-import {useProjectsStore} from "../../../stores/projectsStore.js";
+import {onMounted, reactive, ref} from "vue";
 import SelectField from "../../../components/inputs/SelectField.vue";
 import InputField from "../../../components/inputs/InputField.vue";
-import SelectAssignUsers from "../../../components/SelectAssignUsers.vue";
 import WYSIWYG from "../../../components/inputs/WYSIWYG.vue";
 import FileInputField from "../../../components/inputs/FileInputField.vue";
+import {useProjectsStore} from "./__projectsStore.js";
 
 defineProps({
   msg: String,
@@ -18,32 +15,67 @@ defineProps({
 const route = useRoute();
 const router = useRouter();
 
-const userStore = useGlobalStore()
-const users = userStore.users
-const tags = userStore.tags
-
 const projectsStore = useProjectsStore()
-const categories = projectsStore.categories
 
-const init = () => {
+const splash = ref({})
 
+const init = async () => {
+  const response = await projectsStore.getSplashData()
+  console.log(response);
+  if (response.status) {
+    splash.value = response.data;
+  }
 }
 
-onMounted( () => {
-  init()
+onMounted( async () => {
+  await init()
 })
 
 let form = reactive({
   assigned: [],
 })
 
-const errors = reactive({})
+const errors = ref({})
+
+const validate = (data) => {
+  let errors = {
+    count: 0,
+    data: {
+
+    }
+  };
+
+  if (data.title === "" || data.title === null || data.title === undefined) {
+    errors.count++
+    errors.data.title = 'Title is required'
+  }
+
+  if (data.description === "" || data.description === null || data.description === undefined) {
+    errors.count++
+    errors.data.description = 'Description is required'
+  }
+
+  if (data.assigned == null || data.assigned.length === 0) {
+    errors.count++
+    errors.data.assigned = 'Please select atleast one user'
+  }
+
+  if (data.priority_id == null || data.priority_id === "" ) {
+    errors.count++
+    errors.data.priority = 'Please select priority'
+  }
+
+  if (data.image == null || data.image === "" ) {
+    errors.count++
+    errors.data.image = 'Please upload an image or logo for the project'
+  }
+
+  return errors
+}
 
 const submit = () => {
-  const { data, count } = projectsStore.validator(form);
-  Object.keys(data).forEach( (item) => {
-    errors[item] = data[item]
-  })
+  const { data, count } = validate(form);
+  errors.value = data;
 
   if(count > 0) {
     console.log('PROJECT', form)
@@ -126,29 +158,26 @@ const submit = () => {
             <SelectField
                 id="projectPriority"
                 label-field="name"
-                :options="[
-                    {id:1, name:'High'},
-                    {id:2, name:'Medium'},
-                    {id:3, name:'Low'},
-                ]"
+                :options="splash.priorities"
                 placeholder="Select Priority"
                 search-field="name"
                 title="Priority"
                 value-field="id"
-                v-model="form.priority"
+                v-model="form.priority_id"
                 :multiple="false"
-                :error="errors.priority"
+                :error="errors.priority_id"
             />
 
             <SelectField
                 id="projectCategory"
                 label-field="name"
-                :options="categories"
+                :options="splash.categories"
                 placeholder="Select Category"
                 search-field="name"
                 title="Category"
                 value-field="id"
-                v-model="form.project"
+                v-model="form.project_category_id"
+                :error="errors.project_category_id"
                 :multiple="false"
             />
 
@@ -172,8 +201,19 @@ const submit = () => {
                 :error="errors.end_date"
             />
 
+            <SelectField
+                id="projectUsers"
+                label-field="name"
+                :options="splash.users"
+                placeholder="Select User"
+                search-field="name"
+                title="Assigned"
+                value-field="urid"
+                v-model="form.assigned"
+                :multiple="true"
+                :error="errors.assigned"
+            />
 
-            <SelectAssignUsers v-model="form.assigned" :error="errors.assigned" />
           </div>
         </div>
       </div>

@@ -38,18 +38,28 @@ export const useGlobalStore = defineStore("globalStore", {
             return response;
         },
         async currentUser() {
+            this.loading = true;
             const response = await this.sendRequest('/user')
             if (!response.status) {
+                this.loading = false;
                 return response;
             }
 
             const response_data = response.data;
             this.user = response_data.user;
             this.permissions = response_data.permissions;
+
+            this.loading = false;
             return response;
         },
         async logout() {
-            return await this.sendRequest('/logout', 'post');
+            localStorage.removeItem('auth');
+            const response = await this.sendRequest('/logout', 'post');
+            if (response.status) {
+                localStorage.removeItem('token');
+            } else {
+                console.log('Cannot logout');
+            }
         },
         async sendRequest(request_url, request_method = 'get', request_data = null) {
             try{
@@ -94,5 +104,16 @@ export const useGlobalStore = defineStore("globalStore", {
         async dashboard() {
             return await this.sendRequest('/dashboard')
         },
+        media(urid) {
+            return axios.get(`/media/${urid}/view`)
+        },
+        async checkLoading() {
+            while (this.loading) {
+                //console.log('waiting');
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                //console.log('waiting Done.');
+                //console.log('checking if DB is busy', DB.busy);
+            }
+        }
     }
 })
