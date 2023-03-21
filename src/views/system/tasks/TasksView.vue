@@ -1,8 +1,8 @@
 <script setup>
 import Layout from '../../../layouts/Main.vue'
 import {useRoute, useRouter} from 'vue-router';
-import {useTasksStore} from "../../../stores/tasksStore.js";
 import {onMounted} from "vue";
+import {useTasksStore} from "./__tasksStore.js";
 
 defineProps({
   msg: String,

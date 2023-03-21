@@ -51,5 +51,10 @@ export const useTasksStore = defineStore("tasksStore", {
             const type = 'post'
             return await useGlobalStore().sendRequest(url,type, data);
         },
+        async getMyTasks () {
+            const url = `${URL}/my-tasks`
+            const type = 'get'
+            return await useGlobalStore().sendRequest(url,type);
+        },
     }
 })

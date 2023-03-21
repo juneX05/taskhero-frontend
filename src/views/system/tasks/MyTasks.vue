@@ -1,9 +1,9 @@
 <script setup>
 import Layout from '../../../layouts/Main.vue'
-import { useRoute, useRouter } from 'vue-router';
-import { ref } from 'vue'
-import {useTasksStore} from "../../../stores/tasksStore.js";
-import AssignedList from "../../../components/AssignedList.vue";
+import {useRoute, useRouter} from 'vue-router';
+import {onMounted, ref} from 'vue'
+import {useTasksStore} from "./__tasksStore.js";
+import TasksListComponent from "./components/TasksListComponent.vue";
 
 defineProps({
   msg: String,
@@ -14,25 +14,18 @@ const router = useRouter();
 
 const tasksStore = useTasksStore()
 
-const tasks = tasksStore.tasks
-
-const submit = () => {
-  router.push({name: 'dashboard'})
-}
-
-const stepsCounter = (steps) => {
-  const total = steps.length;
-  const completed = steps.filter( item => item.completed ).length
-
-  return completed + '/' +  total
-}
-
-const splitDateTime = (date) => {
-  const datetime = date.split(" ");
-  return {
-    date: datetime[0], time: datetime[1]
+const records = ref([])
+const init = async () => {
+  const response = await tasksStore.getMyTasks()
+  if (response.status) {
+    records.value = response.data;
   }
 }
+
+onMounted(async () => {
+  await init()
+})
+
 </script>
 
 <template>
@@ -44,11 +37,11 @@ const splitDateTime = (date) => {
         <div class="flex flex-col items-center justify-center">
           <div class="flex-1 align-center space-x-2">
             <p class=" text-xl font-medium text-slate-800 dark:text-navy-50">
-              Tasks
+              My Tasks
             </p>
           </div>
           <p class="mt-1 text-xs">
-            All Tasks
+            All Tasks that you are assigned
           </p>
         </div>
 
@@ -100,7 +93,7 @@ const splitDateTime = (date) => {
                   d="M12 6v6m0 0v6m0-6h6m-6 0H6"
               />
             </svg>
-            <span> Create Task </span>
+            <span> Create Task</span>
           </router-link>
         </div>
       </div>
@@ -108,105 +101,7 @@ const splitDateTime = (date) => {
       <div class="card px-4 pt-2 pb-4">
         <div id="todo-list">
 
-          <div
-              class="border-b border-slate-150 py-3 dark:border-navy-500"
-              v-for="(task, index) in tasks"
-              :key="index"
-          >
-            <div class="flex items-center space-x-2 sm:space-x-3">
-              <label class="flex">
-                <input
-                    :checked="task.completed"
-                    disabled
-                    type="checkbox"
-                    class="todo-checkbox form-checkbox is-outline h-5 w-5 rounded-full border-slate-400/70 before:bg-primary checked:border-primary hover:border-primary focus:border-primary dark:border-navy-400 dark:before:bg-accent dark:checked:border-accent dark:hover:border-accent dark:focus:border-accent"
-                />
-              </label>
-              <router-link
-                  :to="{ name: 'tasks-view', params:{ id: task.id } }"
-                  class="text-slate-600 line-clamp-1 dark:text-navy-100"
-              >
-                {{  task.title  }}
-              </router-link>
-
-
-              <div
-                  v-if="task.steps"
-                  class="badge space-x-1  py-1 px-1.5 "
-                  :class=" {
-                    'bg-error/10 dark:bg-error/15 text-error' : !task.completed,
-                    'bg-success/10 dark:bg-success/15 text-success' : task.completed,
-                  }"
-              >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-3.5 w-3.5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                  <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span>{{ stepsCounter(task.steps) }}</span>
-              </div>
-            </div>
-            <div class="mt-1 flex items-end justify-between">
-              <div class="flex flex-wrap items-center font-inter text-xs">
-                <p>{{ splitDateTime(task.due_date).date }}</p>
-                <div
-                    class="m-1.5 w-px self-stretch bg-slate-200 dark:bg-navy-500"
-                ></div>
-                <span class="flex items-center space-x-1">
-                  <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-3.5 w-3.5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                  >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="1.5"
-                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                    />
-                  </svg>
-                  <span>{{ splitDateTime(task.due_date).time }}</span>
-                </span>
-                <div
-                    class="m-1.5 w-px self-stretch bg-slate-200 dark:bg-navy-500"
-                ></div>
-                <div
-                    class="badge space-x-2.5 px-1"
-                    :class="{
-                      'text-success' : task.priority == 'low',
-                      'text-error' : task.priority == 'high',
-                      'text-warning' : task.priority == 'medium',
-                    }"
-                >
-                  <div class="h-2 w-2 rounded-full bg-current"></div>
-                  <span>{{ task.priority }}</span>
-                </div>
-                <div
-                    class="m-1.5 w-px self-stretch bg-slate-200 dark:bg-navy-500"
-                ></div>
-
-                <div class="badge space-x-2.5 px-1 text-info" v-for="(tag, index) in task.tags">
-                  <div class="h-2 w-2 rounded-full bg-current"></div>
-                  <span>{{ tag }}</span>
-                </div>
-
-              </div>
-              <div class="flex -space-x-1.5">
-                <AssignedList :max_users="2" :users="task.assigned" />
-              </div>
-            </div>
-          </div>
+          <TasksListComponent :records="records" />
 
         </div>
       </div>
