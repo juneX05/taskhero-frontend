@@ -6,6 +6,7 @@ import {useTasksStore} from "./__tasksStore.js";
 import LoaderComponent from "../../../components/LoaderComponent.vue";
 import {formatDate } from "../../../assets/js/utils/helpers.js";
 import EditTaskDetails from "./components/EditTaskDetails.vue";
+import AssignedList from "../../../components/AssignedList.vue";
 
 defineProps({
   msg: String,
@@ -145,39 +146,54 @@ onMounted(async () => {
 
     <!-- Main Content Wrapper -->
     <main class="main-content kanban-app w-full">
-      <div
-          class="flex items-center justify-between space-x-2 px-[var(--margin-x)] py-5 transition-all duration-[.25s]"
-      >
 
+      <div
+          class="grid sm:flex space-y-3 sm:space-y-0 items-center justify-center sm:justify-between py-5 sm:space-x-2 sm:px-[var(--margin-x)] transition-all duration-[.25s]"
+      >
         <router-link
-            :to="{ name:'roles-index' }"
+            :to="{ name:'tasks-view', params: { id: route.params.id } }"
             class="flex h-8 p-4 items-center justify-center rounded-lg bg-info/10 text-slate-600 dark:text-info"
         >
           <i class="fa fa-arrow-left text-base mr-2"></i> Back
         </router-link>
 
-        <div class="flex items-center space-x-2">
-          <div
-              class="flex-1 text-lg font-medium text-slate-700 line-clamp-1 dark:text-navy-50"
-          >
-            <div class="items-center justify-center grid grid-cols-12">
-              <div class="col-span-12">
-                {{ record.title }}
-              </div>
-              <div class="col-span-12" v-if="record.tags">
-                <span
-                    v-for="(item, index) in record.tags"
-                    class="tag h-5 rounded-full text-xs+  mr-1 bg-primary/30 text-primary hover:bg-primary/50"
-                >
-                  {{ item.title }}
-                </span>
-              </div>
-
-            </div>
+        <div v-if="record.project"
+             class="flex flex-col items-center justify-center">
+          <div class="flex">
+            <h3
+                class="flex-1 text-lg font-medium text-slate-700 line-clamp-1 dark:text-navy-50"
+            >
+              TASK: {{ record.title }}
+            </h3>
 
           </div>
-
+          <div class="flex -space-x-1.5">
+            <AssignedList :max_users="2" :users="record.assignees"/>
+          </div>
         </div>
+
+        <div v-if="record.project"
+            class="flex flex-col items-center justify-center">
+          <div class="flex" v-if="record.project">
+            <img
+                v-if="record.project"
+                class="h-8 w-8 rounded-lg object-cover object-center"
+                :src="record.project.media.url"
+                alt="image"
+            />
+            <h1
+                class="flex-1 text-lg ml-2 font-medium text-slate-700 line-clamp-1 dark:text-navy-50"
+            >
+              <span>{{ record.project?.title }}</span>
+            </h1>
+
+          </div>
+          <p class="mt-1 text-xs">
+            PROJECT
+          </p>
+        </div>
+
+
       </div>
 
       <div class="flex px-[var(--margin-x)] flex-col">
@@ -199,11 +215,86 @@ onMounted(async () => {
               <div v-else class="mt-4 min-w-full overflow-x-auto rounded-lg" v-html="record.description"></div>
             </div>
 
-
             <div
-                class="mt-4 grid grid-cols-12 gap-4 transition-all duration-[.25s] sm:mt-5 sm:gap-5 lg:gap-6 "
+                class="mt-2 grid grid-cols-12 gap-4 transition-all duration-[.25s] sm:mt-5 sm:gap-5 lg:gap-6"
             >
-              <div class="col-span-12">
+              <div class="col-span-12 lg:col-span-6 ">
+                <div class="flex items-center justify-between">
+                  <h2
+                      class="text-base font-medium tracking-wide text-slate-700 line-clamp-1 dark:text-navy-100"
+                  >
+                    Files
+                  </h2>
+
+                </div>
+                <div class="card mt-3 space-y-3.5 p-4 text-xs+ max-h-[35vh] overflow-auto">
+
+                  <template v-if="record.files && record.files.length > 0">
+                    <div class="group flex items-center justify-between">
+
+                      <div class="flex space-x-3">
+                        <div
+                            class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white dark:bg-accent"
+                        >
+
+
+                          <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              class="h-5.5 w-5.5"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                          >
+                            <path
+                                fill-rule="evenodd"
+                                d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                                clip-rule="evenodd"
+                            />
+                          </svg>
+
+
+                        </div>
+                        <div>
+                          <a href="#" class="text-slate-600 dark:text-navy-100"
+                          >
+                            Image001
+                          </a
+                          >
+                          <div
+                              class="mt-1 flex text-xs text-slate-400 dark:text-navy-300"
+                          >
+                            <p>
+                              1.2 KB
+                            </p>
+                          </div>
+                        </div>
+
+                      </div>
+                      <div class="flex">
+                        <button
+                            data-toggle="modal"
+                            data-target="#viewFile"
+                            class="popper-ref text-primary btn mr-2 h-8 w-8 opacity-0 rounded-full p-0 hover:bg-slate-300/20 focus:bg-slate-300/20 focus:opacity-100 active:bg-slate-300/25 group-hover:opacity-100 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+                        >
+                          <i class="fa fa-eye"></i>
+                        </button>
+                        <button
+                            data-toggle="modal"
+                            data-target="#deleteFile"
+                            class="popper-ref text-error btn -mr-2 h-8 w-8 opacity-0 rounded-full p-0 hover:bg-slate-300/20 focus:bg-slate-300/20 focus:opacity-100 active:bg-slate-300/25 group-hover:opacity-100 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+                        >
+                          <i class="fa fa-trash-alt"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </template>
+
+                  <div v-else class="p-3">
+                    <h3>No files for task</h3>
+                  </div>
+
+                </div>
+              </div>
+              <div class="col-span-12 lg:col-span-6">
                 <div class="flex justify-between">
                   <div class="flex items-center justify-start">
                     <h2
@@ -323,153 +414,9 @@ onMounted(async () => {
                 </div>
               </div>
             </div>
-
-            <div
-                class="mt-2 grid grid-cols-12 gap-4 transition-all duration-[.25s] sm:mt-5 sm:gap-5 lg:gap-6"
-            >
-              <div class="col-span-12 lg:col-span-6 ">
-                <div class="flex items-center justify-between">
-                  <h2
-                      class="text-base font-medium tracking-wide text-slate-700 line-clamp-1 dark:text-navy-100"
-                  >
-                    Files
-                  </h2>
-
-                </div>
-                <div class="card mt-3 space-y-3.5 p-4 text-xs+ max-h-[35vh] overflow-auto">
-
-                  <template v-if="record.files && record.files.length > 0">
-                    <div class="group flex items-center justify-between">
-
-                      <div class="flex space-x-3">
-                        <div
-                            class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white dark:bg-accent"
-                        >
-
-
-                          <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              class="h-5.5 w-5.5"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                          >
-                            <path
-                                fill-rule="evenodd"
-                                d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                                clip-rule="evenodd"
-                            />
-                          </svg>
-
-
-                        </div>
-                        <div>
-                          <a href="#" class="text-slate-600 dark:text-navy-100"
-                          >
-                            Image001
-                          </a
-                          >
-                          <div
-                              class="mt-1 flex text-xs text-slate-400 dark:text-navy-300"
-                          >
-                            <p>
-                              1.2 KB
-                            </p>
-                          </div>
-                        </div>
-
-                      </div>
-                      <div class="flex">
-                        <button
-                            data-toggle="modal"
-                            data-target="#viewFile"
-                            class="popper-ref text-primary btn mr-2 h-8 w-8 opacity-0 rounded-full p-0 hover:bg-slate-300/20 focus:bg-slate-300/20 focus:opacity-100 active:bg-slate-300/25 group-hover:opacity-100 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
-                        >
-                          <i class="fa fa-eye"></i>
-                        </button>
-                        <button
-                            data-toggle="modal"
-                            data-target="#deleteFile"
-                            class="popper-ref text-error btn -mr-2 h-8 w-8 opacity-0 rounded-full p-0 hover:bg-slate-300/20 focus:bg-slate-300/20 focus:opacity-100 active:bg-slate-300/25 group-hover:opacity-100 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
-                        >
-                          <i class="fa fa-trash-alt"></i>
-                        </button>
-                      </div>
-                    </div>
-                  </template>
-
-                  <div v-else class="p-3">
-                    <h3>No files for task</h3>
-                  </div>
-
-                </div>
-              </div>
-              <div class="col-span-12 lg:col-span-6">
-                <div class="flex items-center justify-between">
-                  <h2
-                      class="text-base font-medium tracking-wide text-slate-700 line-clamp-1 dark:text-navy-100"
-                  >
-                    Assigned Users
-                  </h2>
-                </div>
-                <div class="card mt-3 space-y-3.5 p-4 text-xs+ max-h-[35vh] overflow-auto">
-
-                  <template v-if="record.assignees && record.assignees.length > 0">
-                    <div v-for="(user, index) in record.assignees"
-                         class="group flex items-center justify-between">
-                      <div class="flex space-x-3">
-                        <div
-                            class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white dark:bg-accent"
-                        >
-                          <div class="avatar h-6 w-6 sm:h-8 sm:w-8">
-                            <div
-                                class="is-initial rounded-full border-2 border-slate-50 bg-slate-500 text-xs uppercase text-white dark:border-navy-900"
-                            >
-                              {{ user.name.split(' ').map((n) => n[0]).join('').toUpperCase() }}
-                            </div>
-                          </div>
-
-                        </div>
-                        <div class="flex items-center">
-                          <a href="#" class="text-slate-600 dark:text-navy-100"
-                          >
-                            {{ user.name }}
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </template>
-
-                  <div v-else>
-                    <h3>No users for task</h3>
-                  </div>
-
-                </div>
-              </div>
-            </div>
           </div>
           <div class="col-span-12 lg:col-span-4 mb-10">
-
-            <div v-if="record.project" class="card p-4 col-span-12 md:col-span-6">
-              <div class="flex items-center justify-between">
-                <h2
-                    class="text-base font-medium tracking-wide text-slate-700 line-clamp-1 dark:text-navy-100"
-                >
-                  Project
-                </h2>
-
-              </div>
-              <LoaderComponent v-if="loading" />
-              <div v-else class="flex items-center mt-4 min-w-full overflow-x-auto">
-                <img
-                    class="h-12 w-12 rounded-lg object-cover object-center"
-                    :src="record.project.media.url"
-                    alt="image"
-                />
-                <h3 class="ml-4">{{ record.project.title }}</h3>
-              </div>
-            </div>
-
-            <div class="card mt-4 p-4 col-span-12 md:col-span-6">
+            <div class="card p-4 col-span-12 md:col-span-6">
               <div class="flex items-center justify-between">
                 <h2
                     class="text-base font-medium tracking-wide text-slate-700 line-clamp-1 dark:text-navy-100"
@@ -504,6 +451,17 @@ onMounted(async () => {
                     </th>
                     <td class="whitespace-nowrap border border-l-0 border-slate-200 px-3 py-3 dark:border-navy-500 lg:px-5">
                       {{ formatDate(record.created_at) }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" class="text-center border border-t-0 border-l-0 border-slate-200 px-3 py-3 font-semibold uppercase text-slate-800 dark:border-navy-500 dark:text-navy-100 lg:px-5">
+                      <div class="mb-1 text-center">TAGS</div>
+                      <span
+                          v-for="(item, index) in record.tags"
+                          class="tag h-5 mt-1 mr-1 rounded-full text-xs+ bg-primary/30 text-primary dark:text-white hover:bg-primary/50"
+                      >
+                        {{ item.title }}
+                      </span>
                     </td>
                   </tr>
                   </tbody>
