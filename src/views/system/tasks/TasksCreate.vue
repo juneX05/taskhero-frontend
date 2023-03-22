@@ -61,20 +61,21 @@ const submit = async () => {
   loading.value = true;
   errors.value = validate();
 
-  if (Object.keys(errors.value).length === 0) {
-    console.log(form.value);
-    response.value = await tasksStore.save(form.value)
-    if (response.value.status) {
-      setTimeout(async () => {
-        await router.push({name: 'tasks-index'});
-        loading.value = false;
-      },1000);
-    } else {
-      loading.value = false
-    }
+  if (Object.keys(errors.value).length > 0) return;
 
+  loading.value = true;
+  response.value = await tasksStore.save(form.value)
+  if (response.value.status === false) {
+    if (response.value.message === "ERR_VALIDATION") {
+      response.value.message = 'Validation Error'
+      errors.value = response.value.errors
+    }
+    loading.value = false
   } else {
-    loading.value = false;
+    setTimeout(async () => {
+      await router.push({name: 'tasks-index'});
+      loading.value = false
+    },1000);
   }
 }
 

@@ -32,7 +32,7 @@ const stepsCounter = (steps) => {
           />
         </label>
         <router-link
-            :to="{ name: 'tasks-view', params:{ id: item.id } }"
+            :to="{ name: 'tasks-view', params:{ id: item.urid } }"
             class="text-slate-600 line-clamp-1 dark:text-navy-100"
         >
           {{ item.title }}
@@ -89,7 +89,7 @@ const stepsCounter = (steps) => {
           <span>{{ item.priority.title }}</span>
         </div>
 
-        <template v-if="item.due_date">
+        <template v-if="item.end_date">
           <div
               class="m-1.5 w-px self-stretch bg-slate-200 dark:bg-navy-500"
           ></div>

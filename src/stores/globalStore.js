@@ -78,7 +78,6 @@ export const useGlobalStore = defineStore("globalStore", {
                     return data;
                 }
             } catch (e) {
-                console.log(e);
                 if (e.code === "ERR_NETWORK") {
                     return {status: false, message: "Could Not Connect to the Server."}
                 }
@@ -93,6 +92,7 @@ export const useGlobalStore = defineStore("globalStore", {
                     })
                     return {status: false, message: "ERR_VALIDATION", errors: errors}
                 }
+
                 let message = 'An Error Occurred';
                 if (e.response.data) {
                     message = e.response.data.message;

@@ -7,6 +7,8 @@ import InputField from "../../../components/inputs/InputField.vue";
 import WYSIWYG from "../../../components/inputs/WYSIWYG.vue";
 import FileInputField from "../../../components/inputs/FileInputField.vue";
 import {useProjectsStore} from "./__projectsStore.js";
+import Notifier from "../../../components/Notifier.vue";
+import {Validator} from "../../../assets/js/utils/validator.js";
 
 defineProps({
   msg: String,
@@ -31,59 +33,56 @@ onMounted( async () => {
   await init()
 })
 
-let form = reactive({
-  assigned: [],
-})
+let form = reactive({})
 
+const loading = ref(false)
+const response = ref({})
 const errors = ref({})
 
-const validate = (data) => {
-  let errors = {
-    count: 0,
-    data: {
-
-    }
-  };
-
-  if (data.title === "" || data.title === null || data.title === undefined) {
-    errors.count++
-    errors.data.title = 'Title is required'
+const validate = (key = null) => {
+  const rules = {
+    title: {required: true,},
+    description: {required: true,},
+    assigned: {required: true, type:'array'},
+    priority_id: {required: true},
+    project_category_id: {required: true},
+    image: {required: true},
   }
-
-  if (data.description === "" || data.description === null || data.description === undefined) {
-    errors.count++
-    errors.data.description = 'Description is required'
+  const messages = {
+    title: { required: 'Title is required' },
+    description: { required: 'Description is required' },
+    assigned: { required: 'Please select at least one user' },
+    priority_id: { required: 'Priority is required' },
+    project_category_id: { required: 'Project Category is required' },
+    image: { required: 'Please upload an image to be used as project logo' },
   }
-
-  if (data.assigned == null || data.assigned.length === 0) {
-    errors.count++
-    errors.data.assigned = 'Please select atleast one user'
-  }
-
-  if (data.priority_id == null || data.priority_id === "" ) {
-    errors.count++
-    errors.data.priority = 'Please select priority'
-  }
-
-  if (data.image == null || data.image === "" ) {
-    errors.count++
-    errors.data.image = 'Please upload an image or logo for the project'
-  }
-
-  return errors
+  return Validator.make(form, rules, messages);
 }
 
-const submit = () => {
-  const { data, count } = validate(form);
-  errors.value = data;
+const submit = async () => {
+  response.value = {};
+  loading.value = true;
+  errors.value = await validate();
 
-  if(count > 0) {
-    console.log('PROJECT', form)
-    console.log('MESSAGES',data)
-  } else {
-    projectsStore.save(form)
+  if (Object.keys(errors.value).length > 0){
+    loading.value = false;
+    return;
   }
 
+  response.value = await projectsStore.save(form)
+  if (response.value.status === false) {
+    if (response.value.message === "ERR_VALIDATION") {
+      response.value.message = 'Validation Error'
+      errors.value = response.value.errors
+    }
+    loading.value = false
+    return;
+  }
+
+  setTimeout(async () => {
+    await router.push({name: 'projects-index'});
+    loading.value = false
+  },1000);
 }
 </script>
 
@@ -109,12 +108,25 @@ const submit = () => {
         <div class="flex justify-center space-x-2">
           <button
               @click="submit"
-              class="btn min-w-[7rem] bg-primary font-medium text-white hover:bg-primary-focus focus:bg-primary-focus active:bg-primary-focus/90 dark:bg-accent dark:hover:bg-accent-focus dark:focus:bg-accent-focus dark:active:bg-accent/90"
+              :disabled="loading"
+              class="btn h-[2.3rem] relative min-w-[7rem] bg-primary font-medium text-white hover:bg-primary-focus focus:bg-primary-focus active:bg-primary-focus/90 dark:bg-accent dark:hover:bg-accent-focus dark:focus:bg-accent-focus dark:active:bg-accent/90"
           >
-            Save
+            <span
+                v-if="loading"
+                class="absolute flex h-3 w-3 items-center justify-center"
+            >
+              <span
+                  class="absolute  h-full w-full animate-ping rounded-full bg-secondary opacity-80"
+              ></span>
+              <span
+                  class="h-2 w-2 rounded-full bg-secondary"
+              ></span>
+            </span>
+            <span v-else>Save</span>
           </button>
         </div>
       </div>
+      <Notifier :response="response" />
       <div class="grid grid-cols-12 gap-4 sm:gap-5 lg:gap-6">
         <div class="col-span-12 lg:col-span-8">
           <div class="card">

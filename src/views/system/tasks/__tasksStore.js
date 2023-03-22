@@ -18,8 +18,7 @@ export const useTasksStore = defineStore("tasksStore", {
         },
         async getRecord(id) {
             const url = `${URL}/${id}/view`
-            const response = await useGlobalStore().sendRequest(url);
-            if (response.status) this.record = response.data;
+            return await useGlobalStore().sendRequest(url);
         },
         // since we rely on `this`, we cannot use an arrow function
         async save (data) {
