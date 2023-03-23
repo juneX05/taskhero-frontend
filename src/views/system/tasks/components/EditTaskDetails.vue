@@ -94,14 +94,14 @@ const submit = async () => {
   <button
       data-toggle="drawer"
       :data-target="'#' + page.id"
-      class="drawer-toggle flex h-8 p-4 w-full items-center justify-center rounded-lg bg-primary hover:bg-primary-focus text-white"
+      class="drawer-toggle h-8 w-full items-center justify-center rounded-lg bg-primary hover:bg-primary-focus text-white"
   >
     <i :class="page.button_icon" class="text-base mr-2"></i> {{ page.title }}
   </button>
   <DrawerComponent
       @drawer-open="init"
       @drawer-close="destroy"
-      class="w-full"
+      class=""
       :id="page.id"
       :title="page.title"
       content_class = "w-[300px]"
@@ -121,10 +121,10 @@ const submit = async () => {
           @change="validate('title')"
       />
 
-      <TextAreaField
+      <WYSIWYG
           id="taskDescription"
-          placeholder="Enter Task Description"
-          title="Description:"
+          placeholder="Enter description for the task"
+          title="Description"
           v-model="form.description"
           :error="errors.description"
       />

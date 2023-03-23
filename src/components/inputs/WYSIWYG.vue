@@ -17,7 +17,7 @@
 
 <script setup>
 
-import {onMounted, computed, onUpdated} from "vue";
+import {onMounted, computed, onUpdated, ref} from "vue";
 
 const emit = defineEmits(['update:modelValue'])
 
@@ -63,46 +63,40 @@ const config = {
   theme: "snow",
 };
 
-const manageEditor = (rerender = false) => {
-  const container = document.querySelector("#container-" + props.id);
-  const toolbar = container.querySelector('.ql-toolbar');
-  const element = document.querySelector("#" + props.id);
-
-  if (rerender ){
-    if (props.error)
-    {
-      toolbar.classList.add('border-error')
-    }else {
-      toolbar.classList.remove('border-error')
-    }
-  } else {
-    element._editor = new Quill(element, config);
-
-    element._editor.on('text-change', (delta, oldDelta, source) => {
-      console.log(element._editor.root.innerHTML);
-      if(element._editor.getLength() > 1) {
-        value.value = element._editor.root.innerHTML
-      } else {
-        value.value = ''
-      }
-    });
-  }
-
-  // if (rerender){
-  //   element._editor.setSelection(0, element._editor.getLength());
-  //   element._editor.focus()
-  // }
-}
+let element = null;
+let toolbar = null;
 
 onMounted(() => {
 
-  manageEditor()
+  const container = document.querySelector("#container-" + props.id);
+  toolbar = container.querySelector('.ql-toolbar');
+  element = document.querySelector("#" + props.id);
+
+  element._editor = new Quill(element, config);
+  element._editor.on('text-change', (delta, oldDelta, source) => {
+    if(element._editor.getLength() > 1) {
+      value.value = element._editor.root.innerHTML
+    } else {
+      value.value = ''
+    }
+  });
 
 })
 
 onUpdated(() => {
+  if(element._editor.getLength() > 1) {
+    value.value = element._editor.root.innerHTML
+  } else {
+    if (value.value) element._editor.root.innerHTML = value.value
+  }
 
-  manageEditor(true)
+  if (toolbar == null) return;
+  if (props.error) {
+    toolbar.classList.add('border-error')
+  } else {
+    toolbar.classList.remove('border-error')
+  }
+
 })
 
 </script>

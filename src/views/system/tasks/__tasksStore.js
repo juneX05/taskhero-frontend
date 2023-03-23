@@ -40,11 +40,6 @@ export const useTasksStore = defineStore("tasksStore", {
             const type = 'post'
             return await useGlobalStore().sendRequest(url,type,data);
         },
-        async activate (id, data) {
-            const url = `${URL}/${id}/activate`
-            const type = 'post'
-            return await useGlobalStore().sendRequest(url,type, data);
-        },
         async deactivate (id, data) {
             const url = `${URL}/${id}/deactivate`
             const type = 'post'
@@ -54,6 +49,16 @@ export const useTasksStore = defineStore("tasksStore", {
             const url = `${URL}/my-tasks`
             const type = 'get'
             return await useGlobalStore().sendRequest(url,type);
+        },
+        async completeTask (id, data) {
+            const url = `${URL}/${id}/complete-task`
+            const type = 'post'
+            return await useGlobalStore().sendRequest(url,type, data);
+        },
+        async reOpenTask (id, data) {
+            const url = `${URL}/${id}/re-open-task`
+            const type = 'post'
+            return await useGlobalStore().sendRequest(url,type, data);
         },
     }
 })

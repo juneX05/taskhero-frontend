@@ -7,6 +7,8 @@ import LoaderComponent from "../../../components/LoaderComponent.vue";
 import {formatDate } from "../../../assets/js/utils/helpers.js";
 import EditTaskDetails from "./components/EditTaskDetails.vue";
 import AssignedList from "../../../components/AssignedList.vue";
+import CompleteTaskComponent from "./components/CompleteTaskComponent.vue";
+import ReOpenTaskComponent from "./components/ReOpenTaskComponent.vue";
 
 defineProps({
   msg: String,
@@ -436,7 +438,7 @@ onMounted(async () => {
                     <td class="whitespace-nowrap border border-l-0 border-slate-200 px-3 py-3 dark:border-navy-500 lg:px-5">
                       <span class="tag rounded-full"
                             :class="{
-                              'bg-success/30 text-success hover:bg-success/50' : record.status.name === 'active',
+                              'bg-success/30 text-success hover:bg-success/50' : record.status.name === 'completed',
                               'bg-error/30 text-error hover:bg-error/50' : record.status.name === 'inactive',
                               'bg-warning/30 text-warning hover:bg-warning/50' : record.status.name === 'pending',
                             }"
@@ -480,9 +482,10 @@ onMounted(async () => {
               </div>
 
               <LoaderComponent v-if="loading" />
-              <div v-else class="mt-4 min-w-full space-y-1 overflow-x-auto">
+              <div v-else class="flex space-x-1 mt-4 min-w-full overflow-x-auto">
 
                 <EditTaskDetails
+                    v-if="['pending'].includes(record.status.name)"
                   :record_id="record_id"
                   :record="{
                     title: record.title,
@@ -497,6 +500,24 @@ onMounted(async () => {
                   @record-updated="init"
                 />
 
+                <CompleteTaskComponent
+                    v-if="['pending'].includes(record.status.name)"
+                  :record_id="record_id"
+                  :record="{
+                    title: record.title,
+                  }"
+                  @record-updated="init"
+                />
+
+
+                <ReOpenTaskComponent
+                    v-if="['completed'].includes(record.status.name)"
+                  :record_id="record_id"
+                  :record="{
+                    title: record.title,
+                  }"
+                  @record-updated="init"
+                />
 
               </div>
             </div>
