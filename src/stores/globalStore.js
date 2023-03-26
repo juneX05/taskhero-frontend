@@ -61,6 +61,19 @@ export const useGlobalStore = defineStore("globalStore", {
                 console.log('Cannot logout');
             }
         },
+        async sendFormDataRequest(request_url, data = null) {
+            let formdata = new FormData();
+            Object.keys(data).forEach( (item) => {
+                if (Array.isArray(data[item])) {
+                    data[item].forEach( (value, index) => {
+                        formdata.append(`${item}[${index}]`, value)
+                    })
+                } else {
+                    formdata.append(item, data[item]);
+                }
+            })
+            return this.sendRequest(request_url, 'post', formdata);
+        },
         async sendRequest(request_url, request_method = 'get', request_data = null) {
             try{
                 let response = null;

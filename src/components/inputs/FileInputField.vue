@@ -9,7 +9,7 @@
     <div
         class="filepond fp-bordered fp-grid mt-1.5 [--fp-grid:2]" :id="'file_container-' + id"
     >
-      <input :id="id" type="file" :accept="accept"/>
+      <input :id="id" type="file" :accept="accept" :multiple="multiple"/>
 
       <span v-if="error" class="text-tiny+ text-error">
         {{ error }}`
@@ -29,7 +29,8 @@ const props = defineProps({
   title: { type: String, default: () => "" },
   accept: { type: String, default: () => "image/png, image/jpeg, image/gif" },
   id: { type: String, default: () => "" },
-  error: { type: String, default: () => null }
+  error: { type: String, default: () => null },
+  multiple: {default: () => false},
 })
 
 const value = computed({
@@ -60,7 +61,16 @@ onMounted(() => {
   const fileEl = document.querySelector("#" + props.id);
   fileEl._filepond = FilePond.create(fileEl);
   fileEl._filepond.on('addfile', (error, file) => {
-    value.value = file.file;
+    if (props.multiple) {
+      let files = fileEl._filepond.getFiles()
+      let uploaded_files = [];
+      files.forEach( (file) => {
+        uploaded_files.push(file.file)
+      })
+      value.value = uploaded_files;
+    } else {
+      value.value = file.file;
+    }
   });
   fileEl._filepond.on('removefile', (error, file) => {
     value.value = null;

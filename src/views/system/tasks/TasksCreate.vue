@@ -61,7 +61,10 @@ const submit = async () => {
   loading.value = true;
   errors.value = validate();
 
-  if (Object.keys(errors.value).length > 0) return;
+  if (Object.keys(errors.value).length > 0) {
+    loading.value = false;
+    return;
+  }
 
   loading.value = true;
   response.value = await tasksStore.save(form.value)

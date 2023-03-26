@@ -9,7 +9,9 @@ import Cleave from "cleave.js/dist/cleave.min"; // @see https://github.com/nosir
 
 // Register plugin image preview for filepond
 FilePond.registerPlugin(
-    FilePondPluginFileValidateType,FilePondPluginImagePreview);
+    FilePondPluginFileValidateType
+    // ,FilePondPluginImagePreview
+);
 
 window.FilePond = FilePond;
 window.flatpickr = flatpickr;

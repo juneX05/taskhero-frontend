@@ -10,6 +10,8 @@ import AssignedList from "../../../components/AssignedList.vue";
 import CompleteTaskComponent from "./components/CompleteTaskComponent.vue";
 import ReOpenTaskComponent from "./components/ReOpenTaskComponent.vue";
 import TaskHistoryComponent from "./components/TaskHistoryComponent.vue";
+import AddStepComponent from "./components/AddStepComponent.vue";
+import PopperComponent from "../../../components/PopperComponent.vue";
 
 defineProps({
   msg: String,
@@ -25,7 +27,7 @@ const record = ref({})
 const loading = ref({})
 
 const init = async () => {
-  loading.value=true;
+  loading.value = true;
   const response = await tasksStore.getRecord(record_id);
   if (response.status) {
     record.value = response.data
@@ -91,7 +93,7 @@ onMounted(async () => {
         </router-link>
 
         <div
-             class="flex flex-col items-center justify-center">
+            class="flex flex-col items-center justify-center">
           <div class="flex">
             <h3
                 class="flex-1 text-lg font-medium text-slate-700 line-clamp-1 dark:text-navy-50"
@@ -106,7 +108,7 @@ onMounted(async () => {
         </div>
 
         <div v-if="record.project"
-            class="flex flex-col items-center justify-center">
+             class="flex flex-col items-center justify-center">
           <div class="flex" v-if="record.project">
             <img
                 v-if="record.project"
@@ -140,11 +142,11 @@ onMounted(async () => {
                 <h2
                     class="text-base font-medium tracking-wide text-slate-700 line-clamp-1 dark:text-navy-100"
                 >
-                 Description
+                  Description
                 </h2>
 
               </div>
-              <LoaderComponent v-if="loading" />
+              <LoaderComponent v-if="loading"/>
               <div v-else class="mt-4 min-w-full overflow-x-auto rounded-lg" v-html="record.description"></div>
             </div>
 
@@ -258,7 +260,7 @@ onMounted(async () => {
                   </div>
                 </div>
 
-                <div class="card mt-3 space-y-3.5 p-4 text-xs+">
+                <div class="card mt-3 space-y-3.5 p-4 text-xs+ max-h-[50vh] overflow-y-auto scrollbar-sm">
                   <div id="todo-list">
 
                     <template v-if="record.steps && record.steps.length > 0">
@@ -267,7 +269,7 @@ onMounted(async () => {
                           class="border-b border-slate-150 py-3 dark:border-navy-500"
                       >
                         <div class="group flex items-center justify-between">
-                          <div class="flex">
+                          <div class="flex flex-col">
                             <div class="flex items-center space-x-2 sm:space-x-3">
                               <label class="flex">
                                 <input
@@ -281,59 +283,56 @@ onMounted(async () => {
                                 {{ step.title }}
                               </h2>
                             </div>
-                          </div>
-
-                          <div class="popper-multiple">
-                            <button
-                                class="popper-ref btn -mr-2 h-8 w-8 opacity-0 rounded-full p-0 hover:bg-slate-300/20 focus:bg-slate-300/20 focus:opacity-100 active:bg-slate-300/25 group-hover:opacity-100 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
-                            >
-                              <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  class="h-5 w-5"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                              >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-                                />
-                              </svg>
-                            </button>
-                            <div class="popper-root">
-                              <div
-                                  class="popper-box rounded-md border border-slate-150 bg-white py-1.5 font-inter dark:border-navy-500 dark:bg-navy-700"
-                              >
-                                <ul>
-                                  <li>
-                                    <a
-                                        data-target="#editStep"
-                                        data-toggle="modal"
-                                        href="#"
-                                        class="flex h-8 items-center px-3 pr-8 font-medium tracking-wide outline-none transition-all hover:bg-slate-100 hover:text-slate-800 focus:bg-slate-100 focus:text-slate-800 dark:hover:bg-navy-600 dark:hover:text-navy-100 dark:focus:bg-navy-600 dark:focus:text-navy-100"
-                                    >Edit</a
-                                    >
-                                  </li>
-                                </ul>
-                                <div class="my-1 h-px bg-slate-150 dark:bg-navy-500"></div>
-                                <ul>
-                                  <li>
-                                    <a
-                                        data-target="#deleteStep"
-                                        data-toggle="modal"
-                                        href="#"
-                                        class="flex h-8 items-center text-error px-3 pr-8 font-medium tracking-wide outline-none transition-all hover:bg-slate-100 hover:text-slate-800 focus:bg-slate-100 focus:text-slate-800 dark:hover:bg-navy-600 dark:hover:text-navy-100 dark:focus:bg-navy-600 dark:focus:text-navy-100"
-                                    >
-                                      <i class="fa fa-trash-alt mr-2"></i>
-                                      Delete</a
-                                    >
-                                  </li>
-                                </ul>
+                            <div class="mt-3 flex items-end justify-between">
+                              <div class="flex flex-wrap items-center font-inter text-sm">
+                                <p class="text-info">
+                                  {{  step.description  }}
+                                </p>
                               </div>
                             </div>
+                            <div class="flex-wrap text-xs+ mt-3 items-end justify-between" v-if="step.files && step.files.length > 0">
+                              <a
+                                  v-for="(file, index) in step.files"
+                                  href="#"
+                                  class="inline-flex items-center space-x-1 pt-2 text-slate-600 transition-colors hover:text-primary dark:text-navy-100 dark:hover:text-accent"
+                              >
+                                <span class="text-xs+ ">
+                                  <i class="h-5 w-5 fa fa-file-download"></i>
+                                  {{ file.original_name }}
+                                </span>
+                              </a>
+                            </div>
                           </div>
+
+                          <PopperComponent
+                              :id="'step-'+index">
+
+                            <ul>
+                              <li>
+                                <a
+                                    data-target="#editStep"
+                                    data-toggle="modal"
+                                    href="#"
+                                    class="flex h-8 items-center px-3 pr-8 font-medium tracking-wide outline-none transition-all hover:bg-slate-100 hover:text-slate-800 focus:bg-slate-100 focus:text-slate-800 dark:hover:bg-navy-600 dark:hover:text-navy-100 dark:focus:bg-navy-600 dark:focus:text-navy-100"
+                                >Edit</a
+                                >
+                              </li>
+                            </ul>
+                            <div class="my-1 h-px bg-slate-150 dark:bg-navy-500"></div>
+                            <ul>
+                              <li>
+                                <a
+                                    data-target="#deleteStep"
+                                    data-toggle="modal"
+                                    href="#"
+                                    class="flex h-8 items-center text-error px-3 pr-8 font-medium tracking-wide outline-none transition-all hover:bg-slate-100 hover:text-slate-800 focus:bg-slate-100 focus:text-slate-800 dark:hover:bg-navy-600 dark:hover:text-navy-100 dark:focus:bg-navy-600 dark:focus:text-navy-100"
+                                >
+                                  <i class="fa fa-trash-alt mr-2"></i>
+                                  Delete</a
+                                >
+                              </li>
+                            </ul>
+                          </PopperComponent>
                         </div>
 
                       </div>
@@ -359,7 +358,7 @@ onMounted(async () => {
 
               </div>
 
-              <LoaderComponent v-if="loading" />
+              <LoaderComponent v-if="loading"/>
               <div v-else class="flex flex-col space-y-1 mt-4 min-w-full overflow-x-auto">
 
                 <EditTaskDetails
@@ -379,6 +378,15 @@ onMounted(async () => {
                 />
 
                 <CompleteTaskComponent
+                    v-if="['pending'].includes(record.status.name)"
+                    :record_id="record_id"
+                    :record="{
+                    title: record.title,
+                  }"
+                    @record-updated="init"
+                />
+
+                <AddStepComponent
                     v-if="['pending'].includes(record.status.name)"
                     :record_id="record_id"
                     :record="{
@@ -416,8 +424,9 @@ onMounted(async () => {
                 </h2>
 
               </div>
-              <LoaderComponent v-if="loading" />
-              <div v-else class="mt-4 min-w-full overflow-x-auto rounded-lg border border-slate-200 dark:border-navy-500">
+              <LoaderComponent v-if="loading"/>
+              <div v-else
+                   class="mt-4 min-w-full overflow-x-auto rounded-lg border border-slate-200 dark:border-navy-500">
                 <table class="is-zebra w-full text-left">
                   <tbody>
                   <tr>
@@ -485,7 +494,8 @@ onMounted(async () => {
                     </td>
                   </tr>
                   <tr>
-                    <td colspan="2" class="text-center border border-t-0 border-l-0 border-slate-200 px-3 py-3 font-semibold uppercase text-slate-800 dark:border-navy-500 dark:text-navy-100 lg:px-5">
+                    <td colspan="2"
+                        class="text-center border border-t-0 border-l-0 border-slate-200 px-3 py-3 font-semibold uppercase text-slate-800 dark:border-navy-500 dark:text-navy-100 lg:px-5">
                       <div class="mb-1 text-center">TAGS</div>
                       <span
                           v-for="(item, index) in record.tags"
