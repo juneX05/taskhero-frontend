@@ -94,7 +94,7 @@ const submit = async () => {
   <button
       data-toggle="drawer"
       :data-target="'#' + page.id"
-      class="drawer-toggle h-8 w-full items-center justify-center rounded-lg bg-primary hover:bg-primary-focus text-white"
+      class="drawer-toggle h-8 items-center justify-center rounded-lg bg-primary hover:bg-primary-focus text-white"
   >
     <i :class="page.button_icon" class="text-base mr-2"></i> {{ page.title }}
   </button>

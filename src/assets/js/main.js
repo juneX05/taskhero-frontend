@@ -25,6 +25,7 @@ import SimpleBar from "simplebar";
  * @see https://day.js.org/
  */
 import dayjs from "dayjs";
+import relativeTime from 'dayjs/plugin/relativeTime'
 
 /**
  * Axios Library
@@ -141,6 +142,8 @@ window.Drawer = Drawer;
 window.Accordion = Accordion;
 window.SimpleBar = SimpleBar;
 window.dayjs = dayjs;
+
+dayjs.extend(relativeTime);
 // window.tooltip = tooltip;
 
 const PRELOADER_CLASS = "app-preloader";

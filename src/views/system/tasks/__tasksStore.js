@@ -60,5 +60,10 @@ export const useTasksStore = defineStore("tasksStore", {
             const type = 'post'
             return await useGlobalStore().sendRequest(url,type, data);
         },
+        async getTaskHistory (id) {
+            const url = `/logs/Tasks/${id}/history`
+            const type = 'get'
+            return await useGlobalStore().sendRequest(url,type);
+        },
     }
 })

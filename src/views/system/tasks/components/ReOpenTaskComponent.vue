@@ -72,7 +72,7 @@ onMounted( () => {
   <button
       data-toggle="modal" :data-target="`#${page.id}`"
       :class=" `bg-${page.background} hover:bg-${page.background}-focus text-${page.color}`"
-      class="  h-8 w-full items-center justify-center rounded-lg "
+      class="  h-8 items-center justify-center rounded-lg "
   >
     <i :class="page.button_icon" class="text-base mr-2"></i> {{ page.title }}
   </button>

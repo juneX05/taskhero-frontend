@@ -1,10 +1,67 @@
 <script setup>
 
+import {onMounted, ref} from "vue";
+import {getBrwoserScrollbarWidth, leaveAnimation} from "../assets/js/utils/helpers.js";
+
+const MODAL_OVERLAY_CLASS = "modal-overlay";
+const MODAL_CONTENT_CLASS = "modal-content";
+const MODAL_SHOW_CLASS = "show";
 const props = defineProps({
   id: {},
-  title: {}
+  title: {},
+  content_class: {default: () => 'max-w-lg'}
 })
 
+const emit = defineEmits([
+  'modalOpen', 'modalClose'
+])
+
+const isActive = ref(false)
+const scrollbarWidth = getBrwoserScrollbarWidth();
+const _html = document.documentElement;
+
+let modal, overlay, content, toggleBtns, closeBtns;
+
+const closeModal = () => {
+  if (!isActive.value) return;
+
+  leaveAnimation(modal, () => {
+    modal.classList.remove(MODAL_SHOW_CLASS);
+    _html.style.removeProperty("padding-right");
+    _html.style.removeProperty("overflow");
+    isActive.value = false;
+  });
+
+  emit('modalClose');
+}
+
+const openModal = () => {
+  if (isActive.value) return;
+
+  _html.style.paddingRight = `${scrollbarWidth}px`;
+  _html.style.overflow = "hidden";
+  modal.classList.add(MODAL_SHOW_CLASS);
+  isActive.value = true;
+
+  emit('modalOpen');
+}
+
+onMounted( () => {
+  modal = document.querySelector('#' + props.id)
+  overlay = modal.querySelector(`.${MODAL_OVERLAY_CLASS}`)
+  content = modal.querySelector(`.${MODAL_CONTENT_CLASS}`)
+
+  toggleBtns = document.querySelectorAll(`[data-toggle="modal"][data-target="#${props.id}"]`);
+  closeBtns = document.querySelectorAll(`[data-close-modal]`);
+
+  toggleBtns.forEach((node) => {
+    node.addEventListener("click", () => { openModal(node.dataset.target) });
+  });
+
+  closeBtns.forEach((node) => {
+    node.addEventListener("click", () => { closeModal(node.dataset.target) });
+  });
+})
 </script>
 
 <template>
@@ -15,7 +72,8 @@ const props = defineProps({
   >
     <div class="modal-overlay absolute inset-0 bg-slate-900/60 pointer-events-none"></div>
     <div
-        class="modal-content relative flex w-full max-w-lg origin-top flex-col overflow-hidden rounded-lg bg-white dark:bg-navy-700"
+        :class="content_class"
+        class="modal-content relative flex w-full origin-top flex-col overflow-hidden rounded-lg bg-white dark:bg-navy-700"
     >
       <div
           class="flex justify-between rounded-t-lg bg-slate-200 px-4 py-3 dark:bg-navy-800 sm:px-5"

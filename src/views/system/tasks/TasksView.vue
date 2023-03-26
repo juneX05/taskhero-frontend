@@ -4,11 +4,12 @@ import {useRoute, useRouter} from 'vue-router';
 import {onMounted, ref} from "vue";
 import {useTasksStore} from "./__tasksStore.js";
 import LoaderComponent from "../../../components/LoaderComponent.vue";
-import {formatDate } from "../../../assets/js/utils/helpers.js";
+import {formatDate, timeLeft} from "../../../assets/js/utils/helpers.js";
 import EditTaskDetails from "./components/EditTaskDetails.vue";
 import AssignedList from "../../../components/AssignedList.vue";
 import CompleteTaskComponent from "./components/CompleteTaskComponent.vue";
 import ReOpenTaskComponent from "./components/ReOpenTaskComponent.vue";
+import TaskHistoryComponent from "./components/TaskHistoryComponent.vue";
 
 defineProps({
   msg: String,
@@ -42,15 +43,6 @@ const init = async () => {
     delayOnTouchOnly: true,
   });
 
-  new Modal('#newStep')
-  new Modal('#editStep')
-  new Modal('#deleteStep')
-
-  new Modal('#newFile')
-  new Modal('#deleteFile')
-  new Modal('#viewFile')
-
-  new Modal('#manageUsers')
 
   // Todo Checkbox
   const todoCheckbox = document.querySelectorAll(".todo-checkbox");
@@ -73,67 +65,6 @@ const init = async () => {
       },
     ],
   });
-
-
-  // Task Files (Filepond)
-  const taskFileEl = document.querySelector("#taskFile");
-  taskFileEl._filepond = FilePond.create(taskFileEl);
-
-  // Post Authors (Tom Select)
-  const configassignUsers = {
-    valueField: "id",
-    searchField: "title",
-    options: [
-      {
-        id: 1,
-        name: "John Doe",
-        job: "Web designer",
-        src: "/src/assets/images/200x200.png",
-      },
-      {
-        id: 2,
-        name: "Emilie Watson",
-        job: "Developer",
-        src: "/src/assets/images/200x200.png",
-      },
-      {
-        id: 3,
-        name: "Nancy Clarke",
-        job: "Software Engineer",
-        src: "/src/assets/images/200x200.png",
-      },
-    ],
-    placeholder: "Select the user",
-    render: {
-      option: function (data, escape) {
-        return `<div class="flex space-x-3">
-                      <div class="avatar w-8 h-8">
-                        <img class="rounded-full" src="${escape(
-            data.src
-        )}" alt="avatar"/>
-                      </div>
-                      <div class="flex flex-col">
-                        <span> ${escape(data.name)}</span>
-                        <span class="text-xs opacity-80"> ${escape(
-            data.job
-        )}</span>
-                      </div>
-                    </div>`;
-      },
-      item: function (data, escape) {
-        return `<span class="badge rounded-full bg-primary dark:bg-accent text-white p-px mr-2">
-                      <span class="avatar w-6 h-6">
-                        <img class="rounded-full" src="${escape(
-            data.src
-        )}" alt="avatar">
-                      </span>
-                      <span class="mx-2">${escape(data.name)}</span>
-                    </span>`;
-      },
-    },
-  };
-  const assignUsersEl = document.querySelector("#assignUsers");
-  assignUsersEl._tom = new Tom(assignUsersEl, configassignUsers);
 }
 
 onMounted(async () => {
@@ -153,13 +84,13 @@ onMounted(async () => {
           class="grid sm:flex space-y-3 sm:space-y-0 items-center justify-center sm:justify-between py-5 sm:space-x-2 sm:px-[var(--margin-x)] transition-all duration-[.25s]"
       >
         <router-link
-            :to="{ name:'tasks-view', params: { id: route.params.id } }"
+            :to="{ name:'tasks-index'}"
             class="flex h-8 p-4 items-center justify-center rounded-lg bg-info/10 text-slate-600 dark:text-info"
         >
           <i class="fa fa-arrow-left text-base mr-2"></i> Back
         </router-link>
 
-        <div v-if="record.project"
+        <div
              class="flex flex-col items-center justify-center">
           <div class="flex">
             <h3
@@ -418,7 +349,65 @@ onMounted(async () => {
             </div>
           </div>
           <div class="col-span-12 lg:col-span-4 mb-10">
-            <div class="card p-4 col-span-12 md:col-span-6">
+            <div class="card p-4 col-span-6">
+              <div class="flex items-center justify-between">
+                <h2
+                    class="text-base font-medium tracking-wide text-slate-700 line-clamp-1 dark:text-navy-100"
+                >
+                  Actions
+                </h2>
+
+              </div>
+
+              <LoaderComponent v-if="loading" />
+              <div v-else class="flex flex-col space-y-1 mt-4 min-w-full overflow-x-auto">
+
+                <EditTaskDetails
+                    v-if="['pending'].includes(record.status.name)"
+                    :record_id="record_id"
+                    :record="{
+                    title: record.title,
+                    description: record.description,
+                    assigned: record.assignees.map( (item) => item.urid),
+                    priority_id: record.priority_id,
+                    project_id: record.project_id,
+                    task_tags: record.tags.map( (item) => item.urid),
+                    start_date: record.start_date,
+                    end_date: record.end_date,
+                  }"
+                    @record-updated="init"
+                />
+
+                <CompleteTaskComponent
+                    v-if="['pending'].includes(record.status.name)"
+                    :record_id="record_id"
+                    :record="{
+                    title: record.title,
+                  }"
+                    @record-updated="init"
+                />
+
+                <ReOpenTaskComponent
+                    v-if="['completed'].includes(record.status.name)"
+                    :record_id="record_id"
+                    :record="{
+                    title: record.title,
+                  }"
+                    @record-updated="init"
+                />
+
+                <TaskHistoryComponent
+                    :record_id="record_id"
+                    :record="{
+                    title: record.title,
+                  }"
+                    @record-updated="init"
+                />
+
+              </div>
+            </div>
+
+            <div class="card p-4 mt-4 col-span-12 md:col-span-6">
               <div class="flex items-center justify-between">
                 <h2
                     class="text-base font-medium tracking-wide text-slate-700 line-clamp-1 dark:text-navy-100"
@@ -431,6 +420,22 @@ onMounted(async () => {
               <div v-else class="mt-4 min-w-full overflow-x-auto rounded-lg border border-slate-200 dark:border-navy-500">
                 <table class="is-zebra w-full text-left">
                   <tbody>
+                  <tr>
+                    <th class="whitespace-nowrap border border-t-0 border-l-0 border-slate-200 px-3 py-3 font-semibold uppercase text-slate-800 dark:border-navy-500 dark:text-navy-100 lg:px-5">
+                      Priority
+                    </th>
+                    <td class="whitespace-nowrap border border-l-0 border-slate-200 px-3 py-3 dark:border-navy-500 lg:px-5">
+                      <span class="tag rounded-full"
+                            :class="{
+                              'bg-success/30 text-success hover:bg-success/50' : record.priority.name === 'low',
+                              'bg-error/30 text-error hover:bg-error/50' : record.priority.name === 'high',
+                              'bg-warning/30 text-warning hover:bg-warning/50' : record.priority.name === 'medium',
+                            }"
+                      >
+                        {{ record.priority.title }}
+                      </span>
+                    </td>
+                  </tr>
                   <tr>
                     <th class="whitespace-nowrap border border-t-0 border-l-0 border-slate-200 px-3 py-3 font-semibold uppercase text-slate-800 dark:border-navy-500 dark:text-navy-100 lg:px-5">
                       Status
@@ -456,6 +461,30 @@ onMounted(async () => {
                     </td>
                   </tr>
                   <tr>
+                    <th class="whitespace-nowrap border border-t-0 border-l-0 border-slate-200 px-3 py-3 font-semibold uppercase text-slate-800 dark:border-navy-500 dark:text-navy-100 lg:px-5">
+                      Start Date
+                    </th>
+                    <td class="whitespace-nowrap border border-l-0 border-slate-200 px-3 py-3 dark:border-navy-500 lg:px-5">
+                      {{ formatDate(record.start_date) }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th class="whitespace-nowrap border border-t-0 border-l-0 border-slate-200 px-3 py-3 font-semibold uppercase text-slate-800 dark:border-navy-500 dark:text-navy-100 lg:px-5">
+                      End Date
+                    </th>
+                    <td class="whitespace-nowrap border border-l-0 border-slate-200 px-3 py-3 dark:border-navy-500 lg:px-5">
+                      {{ formatDate(record.end_date) }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th class="whitespace-nowrap border border-t-0 border-l-0 border-slate-200 px-3 py-3 font-semibold uppercase text-slate-800 dark:border-navy-500 dark:text-navy-100 lg:px-5">
+                      Time Left
+                    </th>
+                    <td class="whitespace-nowrap border border-l-0 border-slate-200 px-3 py-3 dark:border-navy-500 lg:px-5">
+                      {{ timeLeft(record.end_date) }}
+                    </td>
+                  </tr>
+                  <tr>
                     <td colspan="2" class="text-center border border-t-0 border-l-0 border-slate-200 px-3 py-3 font-semibold uppercase text-slate-800 dark:border-navy-500 dark:text-navy-100 lg:px-5">
                       <div class="mb-1 text-center">TAGS</div>
                       <span
@@ -470,58 +499,6 @@ onMounted(async () => {
                 </table>
               </div>
             </div>
-
-            <div class="card p-4 mt-4 col-span-6">
-              <div class="flex items-center justify-between">
-                <h2
-                    class="text-base font-medium tracking-wide text-slate-700 line-clamp-1 dark:text-navy-100"
-                >
-                  Actions
-                </h2>
-
-              </div>
-
-              <LoaderComponent v-if="loading" />
-              <div v-else class="flex space-x-1 mt-4 min-w-full overflow-x-auto">
-
-                <EditTaskDetails
-                    v-if="['pending'].includes(record.status.name)"
-                  :record_id="record_id"
-                  :record="{
-                    title: record.title,
-                    description: record.description,
-                    assigned: record.assignees.map( (item) => item.urid),
-                    priority_id: record.priority_id,
-                    project_id: record.project_id,
-                    task_tags: record.tags.map( (item) => item.urid),
-                    start_date: record.start_date,
-                    end_date: record.end_date,
-                  }"
-                  @record-updated="init"
-                />
-
-                <CompleteTaskComponent
-                    v-if="['pending'].includes(record.status.name)"
-                  :record_id="record_id"
-                  :record="{
-                    title: record.title,
-                  }"
-                  @record-updated="init"
-                />
-
-
-                <ReOpenTaskComponent
-                    v-if="['completed'].includes(record.status.name)"
-                  :record_id="record_id"
-                  :record="{
-                    title: record.title,
-                  }"
-                  @record-updated="init"
-                />
-
-              </div>
-            </div>
-
           </div>
         </div>
       </div>

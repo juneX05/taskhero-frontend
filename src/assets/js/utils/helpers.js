@@ -46,3 +46,14 @@ export function makeId(length) {
 export function formatDate(date) {
   return dayjs(date).format('DD/MM/YYYY')
 }
+
+export function timePassed(date) {
+  return dayjs(date).fromNow(true) + ' ago';
+}
+
+export function timeLeft(from_date, to_date = null) {
+  if (to_date == null)   return dayjs().to(dayjs(from_date), true) + ' left'
+
+  return dayjs(from_date).to(dayjs(to_date), true) + ' left'
+
+}

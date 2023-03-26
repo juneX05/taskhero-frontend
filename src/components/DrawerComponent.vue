@@ -20,6 +20,7 @@ let drawer, overlay ,content;
 const closeDrawer = () => {
   if (!isActive.value) return;
 
+  drawer.classList.add('hidden');
   if (overlay) {
     // helpers.leaveAnimation(overlay, () => {
       overlay.classList.add("hidden");
@@ -39,6 +40,7 @@ let toggleBtns, closeBtns;
 const openDrawer = () => {
   if (isActive.value) return;
 
+  drawer.classList.remove('hidden');
   if (overlay) overlay.classList.remove('hidden');
   content.classList.remove('hidden')
 
@@ -65,7 +67,7 @@ onMounted( () => {
 </script>
 
 <template>
-    <div :id="id" class="drawer">
+    <div :id="id" class="drawer hidden">
       <div
           @click="closeDrawer"
           class="drawer-overlay fixed inset-0 z-[100] hidden bg-slate-900/60"
