@@ -92,6 +92,7 @@ const checkHidden = (key) => {
 const resolveValue = (key, value) => {
   let keys = {
     priority: 'title',
+    step: ['title', 'description'],
     project: 'title',
     status: 'title',
     assignees: 'name',
@@ -101,7 +102,18 @@ const resolveValue = (key, value) => {
     if (Array.isArray(value) && value.length > 0) {
       return value.map((n) => n[keys[key]]).join(', ')
     } else {
-      return value === undefined || value === null ? '' : value[keys[key]]
+      if (value === undefined || value === null) return '';
+
+      if (Array.isArray(keys[key])){
+        let values = keys[key];
+        let data = '';
+        values.forEach( (item) => {
+          data += `<b>${item}</b>: ${value[item]} <br/>`
+        })
+        return data;
+      }
+
+      return  value[keys[key]]
     }
   }
 
@@ -184,18 +196,18 @@ const resolveValue = (key, value) => {
                                 <tr v-if="checkHidden(key) && resolveValue(key, record.old_data[key]) !== resolveValue(key, record.new_data[key]) ">
                                   <th
                                       class="whitespace-nowrap border border-l-0 border-slate-200 px-3 py-3 dark:border-navy-500 lg:px-5"
+                                      v-html="key"
                                   >
-                                    {{ key }}
                                   </th>
                                   <td
                                       class=" border border-l-0 border-slate-200 px-3 py-3 dark:border-navy-500 lg:px-5"
+                                      v-html="resolveValue(key, record.old_data[key])"
                                   >
-                                    {{ resolveValue(key, record.old_data[key]) }}
                                   </td>
                                   <td
                                       class=" border border-l-0 border-slate-200 px-3 py-3 dark:border-navy-500 lg:px-5"
+                                      v-html="resolveValue(key, record.new_data[key])"
                                   >
-                                    {{ resolveValue(key, record.new_data[key]) }}
                                   </td>
 
                                 </tr>

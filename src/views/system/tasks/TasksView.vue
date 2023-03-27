@@ -12,6 +12,7 @@ import ReOpenTaskComponent from "./components/ReOpenTaskComponent.vue";
 import TaskHistoryComponent from "./components/TaskHistoryComponent.vue";
 import AddStepComponent from "./components/AddStepComponent.vue";
 import PopperComponent from "../../../components/PopperComponent.vue";
+import EditStepComponent from "./components/EditStepComponent.vue";
 
 defineProps({
   msg: String,
@@ -304,18 +305,25 @@ onMounted(async () => {
                             </div>
                           </div>
 
+                          <EditStepComponent
+                              v-if="['pending'].includes(record.status.name)"
+                              :task_id="record_id"
+                              :record_id="step.urid"
+                              :record="{title: step.title,description: step.description, files: step.files }"
+                              @record-updated="init"
+                          />
+
                           <PopperComponent
                               :id="'step-'+index">
-
                             <ul>
                               <li>
                                 <a
-                                    data-target="#editStep"
-                                    data-toggle="modal"
-                                    href="#"
-                                    class="flex h-8 items-center px-3 pr-8 font-medium tracking-wide outline-none transition-all hover:bg-slate-100 hover:text-slate-800 focus:bg-slate-100 focus:text-slate-800 dark:hover:bg-navy-600 dark:hover:text-navy-100 dark:focus:bg-navy-600 dark:focus:text-navy-100"
-                                >Edit</a
+                                    data-toggle="modal" :data-target="`#edit_task_step`"
+                                    class="flex h-8 items-center text-warning px-3 pr-8 font-medium tracking-wide outline-none transition-all hover:bg-slate-100 hover:text-slate-800 focus:bg-slate-100 focus:text-slate-800 dark:hover:bg-navy-600 dark:hover:text-navy-100 dark:focus:bg-navy-600 dark:focus:text-navy-100"
                                 >
+                                  <i class="fa fa-edit mr-2"></i>
+                                  Edit
+                                </a>
                               </li>
                             </ul>
                             <div class="my-1 h-px bg-slate-150 dark:bg-navy-500"></div>
@@ -328,8 +336,8 @@ onMounted(async () => {
                                     class="flex h-8 items-center text-error px-3 pr-8 font-medium tracking-wide outline-none transition-all hover:bg-slate-100 hover:text-slate-800 focus:bg-slate-100 focus:text-slate-800 dark:hover:bg-navy-600 dark:hover:text-navy-100 dark:focus:bg-navy-600 dark:focus:text-navy-100"
                                 >
                                   <i class="fa fa-trash-alt mr-2"></i>
-                                  Delete</a
-                                >
+                                  Delete
+                                </a>
                               </li>
                             </ul>
                           </PopperComponent>
