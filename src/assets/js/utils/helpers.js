@@ -1,12 +1,3 @@
-export function toggleCode(e) {
-  const card = e.target.closest(".card");
-  const codeWrapper = card.querySelector(".code-wrapper");
-
-  e.target.checked
-    ? codeWrapper.classList.remove("hidden")
-    : codeWrapper.classList.add("hidden");
-}
-
 export function getBrwoserScrollbarWidth() {
   return window.innerWidth - document.documentElement.clientWidth;
 }
@@ -55,5 +46,5 @@ export function timeLeft(from_date, to_date = null) {
   if (to_date == null)   return dayjs().to(dayjs(from_date), true) + ' left'
 
   return dayjs(from_date).to(dayjs(to_date), true) + ' left'
-
 }
+

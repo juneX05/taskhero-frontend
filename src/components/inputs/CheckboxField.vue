@@ -4,7 +4,8 @@
         :id="id"
         :value="value"
         v-model="model_value"
-        class="form-checkbox is-basic h-5 w-5 rounded-full border-slate-400/70 checked:bg-slate-500 checked:border-slate-500 hover:border-slate-500 focus:border-slate-500 dark:border-navy-400 dark:checked:bg-navy-400"
+           :class="style === 'rounded' ? 'rounded-full' : ''"
+        class="form-checkbox is-basic h-5 w-5 border-slate-400/70 checked:bg-slate-500 checked:border-slate-500 hover:border-slate-500 focus:border-slate-500 dark:border-navy-400 dark:checked:bg-navy-400"
         type="checkbox"
     />
     <input v-else
@@ -12,7 +13,8 @@
         v-model="model_value"
         :true-value="true_value"
         :false-value="false_value"
-        class="form-checkbox is-basic h-5 w-5 rounded-full border-slate-400/70 checked:bg-slate-500 checked:border-slate-500 hover:border-slate-500 focus:border-slate-500 dark:border-navy-400 dark:checked:bg-navy-400"
+           :class="style === 'rounded' ? 'rounded-full' : ''"
+        class="form-checkbox is-basic h-5 w-5 border-slate-400/70 checked:bg-slate-500 checked:border-slate-500 hover:border-slate-500 focus:border-slate-500 dark:border-navy-400 dark:checked:bg-navy-400"
         type="checkbox"
     />
     <span v-html="title"></span>
@@ -36,7 +38,8 @@ const props = defineProps({
   true_value: {  },
   false_value: {  },
   error: { type: String, default: () => null },
-  multiple: { default: () => false }
+  multiple: { default: () => false },
+  style: { default: () => 'rounded' }
 })
 
 const model_value = computed({

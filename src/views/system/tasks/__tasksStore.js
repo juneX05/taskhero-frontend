@@ -66,10 +66,24 @@ export const useTasksStore = defineStore("tasksStore", {
             return await useGlobalStore().sendRequest(url,type);
         },
         async addTaskStep (id, data) {
-            console.log(data);
             const url = `${URL}/${id}/steps/save`
             const type = 'post'
             return await useGlobalStore().sendFormDataRequest(url, data);
+        },
+        async editTaskStep (task_id, id, data) {
+            const url = `${URL}/${task_id}/steps/${id}/update`
+            const type = 'post'
+            return await useGlobalStore().sendFormDataRequest(url, data);
+        },
+        async removeTaskStepFiles (task_id, id, data) {
+            const url = `${URL}/${task_id}/steps/${id}/remove-files`
+            const type = 'post'
+            return await useGlobalStore().sendFormDataRequest(url, {removeFiles: data});
+        },
+        async getTaskStepHistory (id) {
+            const url = `/logs/TaskSteps/${id}/history`
+            const type = 'get'
+            return await useGlobalStore().sendRequest(url,type);
         },
     }
 })

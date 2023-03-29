@@ -155,7 +155,7 @@ const submit = async () => {
                       v-model="form.image"
                       :error="errors.image"
                       title="Image/Logo"
-                      id="project_image"
+                      id="step_files"
                       accept="image/png, image/jpeg, image/gif"
                   />
 

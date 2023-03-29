@@ -10,9 +10,8 @@ import AssignedList from "../../../components/AssignedList.vue";
 import CompleteTaskComponent from "./components/CompleteTaskComponent.vue";
 import ReOpenTaskComponent from "./components/ReOpenTaskComponent.vue";
 import TaskHistoryComponent from "./components/TaskHistoryComponent.vue";
-import AddStepComponent from "./components/AddStepComponent.vue";
-import PopperComponent from "../../../components/PopperComponent.vue";
-import EditStepComponent from "./components/EditStepComponent.vue";
+import AddStepComponent from "./components/steps/AddStepComponent.vue";
+import ManageStepComponent from "./components/steps/ManageStepComponent.vue";
 
 defineProps({
   msg: String,
@@ -25,7 +24,9 @@ const tasksStore = useTasksStore()
 
 const record_id = route.params.id;
 const record = ref({})
+const step_record = ref({})
 const loading = ref({})
+const showModal = ref(false)
 
 const init = async () => {
   loading.value = true;
@@ -73,6 +74,17 @@ const init = async () => {
 onMounted(async () => {
   await init()
 })
+
+const initializeModal = (step) => {
+  showModal.value = true;
+  step_record.value = step;
+  console.log(step_record);
+}
+
+const resetStepDetails = () => {
+  showModal.value = false
+  step_record.value = {}
+}
 
 </script>
 
@@ -264,6 +276,15 @@ onMounted(async () => {
                 <div class="card mt-3 space-y-3.5 p-4 text-xs+ max-h-[50vh] overflow-y-auto scrollbar-sm">
                   <div id="todo-list">
 
+                    <ManageStepComponent
+                        @modal-closing="resetStepDetails"
+                        :task_id="record_id"
+                        :record_id="step_record.urid"
+                        :record="{title:step_record.title, description:step_record.description, files:step_record.files}"
+                        :show-modal="showModal"
+                        @record-updated="init"
+                    />
+
                     <template v-if="record.steps && record.steps.length > 0">
                       <div
                           v-for="(step, index) in record.steps"
@@ -278,7 +299,7 @@ onMounted(async () => {
                                     class="todo-checkbox form-checkbox is-outline h-5 w-5 rounded-full border-slate-400/70 before:bg-primary checked:border-primary hover:border-primary focus:border-primary dark:border-navy-400 dark:before:bg-accent dark:checked:border-accent dark:hover:border-accent dark:focus:border-accent"
                                 />
                               </label>
-                              <h2
+                              <h2  @click="initializeModal(step)"
                                   class="cursor-pointer text-slate-600 line-clamp-1 dark:text-navy-100"
                               >
                                 {{ step.title }}
@@ -304,43 +325,6 @@ onMounted(async () => {
                               </a>
                             </div>
                           </div>
-
-                          <EditStepComponent
-                              v-if="['pending'].includes(record.status.name)"
-                              :task_id="record_id"
-                              :record_id="step.urid"
-                              :record="{title: step.title,description: step.description, files: step.files }"
-                              @record-updated="init"
-                          />
-
-                          <PopperComponent
-                              :id="'step-'+index">
-                            <ul>
-                              <li>
-                                <a
-                                    data-toggle="modal" :data-target="`#edit_task_step`"
-                                    class="flex h-8 items-center text-warning px-3 pr-8 font-medium tracking-wide outline-none transition-all hover:bg-slate-100 hover:text-slate-800 focus:bg-slate-100 focus:text-slate-800 dark:hover:bg-navy-600 dark:hover:text-navy-100 dark:focus:bg-navy-600 dark:focus:text-navy-100"
-                                >
-                                  <i class="fa fa-edit mr-2"></i>
-                                  Edit
-                                </a>
-                              </li>
-                            </ul>
-                            <div class="my-1 h-px bg-slate-150 dark:bg-navy-500"></div>
-                            <ul>
-                              <li>
-                                <a
-                                    data-target="#deleteStep"
-                                    data-toggle="modal"
-                                    href="#"
-                                    class="flex h-8 items-center text-error px-3 pr-8 font-medium tracking-wide outline-none transition-all hover:bg-slate-100 hover:text-slate-800 focus:bg-slate-100 focus:text-slate-800 dark:hover:bg-navy-600 dark:hover:text-navy-100 dark:focus:bg-navy-600 dark:focus:text-navy-100"
-                                >
-                                  <i class="fa fa-trash-alt mr-2"></i>
-                                  Delete
-                                </a>
-                              </li>
-                            </ul>
-                          </PopperComponent>
                         </div>
 
                       </div>
